@@ -52,7 +52,9 @@ create table disciplinas_curriculo(
 create table pre_requisitos(
 	id_disciplina_principal smallint,
 	id_disciplina_requisito smallint,
-	primary key(id_disciplina_requisito, id_disciplina_principal)
+	primary key(id_disciplina_requisito, id_disciplina_principal),
+    foreign key (id_disciplina_principal) references disciplinas(id_disciplina),
+    foreign key (id_disciplina_requisito) references disciplinas(id_disciplina)
 );
 create table semestres(
 	id_semestre smallint,
@@ -67,7 +69,7 @@ create table turmas(
     id_professor integer,
     id_semestre smallint,
     max_vagas smallint,
-    vagas_ocupadas smallint,
+    vagas_ocupadas smallint default 0,
     primary key(id_turma),
     foreign key(id_disciplina) references disciplinas(id_disciplina),
     foreign key (id_semestre) references semestres(id_semestre),
