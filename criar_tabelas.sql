@@ -110,7 +110,7 @@ create table usuarios(
 
 create table logsSistema(
 	id_log integer auto_increment,
-    id_usuario integer,
+    id_usuario integer null,
     acao varchar (150),
     tabelaAfetada varchar(50),
     dataHora datetime,

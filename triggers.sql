@@ -221,3 +221,25 @@ BEGIN
     END IF;
 END $
 DELIMITER ;
+/*Incremento para automatizar a inserção de dados em usuario 
+---->by leh*/
+
+DELIMITER $
+CREATE TRIGGER trg_professor_usuario
+AFTER INSERT ON professores
+FOR EACH ROW
+BEGIN
+	INSERT INTO usuarios(nome,email, tipoUsuario,senhaHash)
+    VALUES(NEW.nome,NEW.email,'PROFESSOR',SHA2('123456', 256));
+END $
+DELIMITER ;
+
+DELIMITER $
+CREATE TRIGGER trg_aluno_usuario
+AFTER INSERT ON alunos
+FOR EACH ROW
+BEGIN
+	INSERT INTO usuarios(nome,email,tipoUsuario,senhaHash)
+    VALUES(NEW.nome,NEW.email,'ALUNO',SHA2('123456', 256));
+END $
+DELIMITER ;
