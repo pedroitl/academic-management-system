@@ -158,7 +158,6 @@ END $$
 
 DELIMITER ;
 
-call sp_lancarNotas(3,8.0);
 
 /*sp_TrancarMatricula
 >> o Parâmetros: p_ID_Matricula, p_Usuario
@@ -197,7 +196,7 @@ begin
             where id_turma = v_id_turma;
             
             insert into logssistema(id_usuario,acao,tabelaAfetada,dataHora)
-            values(p_ID_Usuario,"trancar_matricula","matriculas",(now));
+            values(p_ID_Usuario,"trancar_matricula","matriculas",now());
 		
         end if;
         
@@ -207,10 +206,38 @@ end $$
 
 DELIMITER ;
 
-
 /*sp_GerarHistoricoAluno
 >> o Parâmetro: p_ID_Aluno
->> o Insere no histórico todas as disciplinas aprovadas do aluno.*/
+>> o Inserir no histórico todas as disciplinas aprovadas do aluno.*/
+
+DELIMITER $$
+
+create procedure sp_GerarHistoricoAluno(in p_ID_Aluno int)
+
+begin
+	
+    DECLARE v_quantidade_alunos int;
+    
+    select count(*) into v_quantidade_alunos
+	from historicoaluno where id_aluno = p_ID_Aluno;
+    
+    if v_quantidade_alunos = 0 then
+		insert into historicoaluno(id_aluno,id_disciplina,notaFinal,status)
+		select m.id_aluno,t.id_disciplina,m.notaFinal,m.status
+        from matriculas as m
+        inner join turmas as t on m.id_turma = t.id_turma
+        inner join disciplinas as d on t.id_disciplina = d.id_disciplina
+        where m.status = "APROVADO"
+        and m.id_aluno = p_ID_Aluno;
+     
+     else 
+        set v_quantidade_alunos = v_quantidade_alunos;
+        
+	end if;
+
+end $$
+
+DELIMITER ;
 
 /*sp_ReabrirPeriodoMatricula
 >> o Reabre um semestre, definindo AbertoParaMatricula = TRUE.*/
