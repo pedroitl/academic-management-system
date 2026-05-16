@@ -19,10 +19,10 @@ create table professores(
 );
 create table alunos(
    id_aluno integer auto_increment,
-   nome varchar(200),
-   cpf char(13),
-   email varchar(100),
-   dataNascimento date,
+   nome varchar(200) not null,
+   cpf char(14) not null,
+   email varchar(100) not null,
+   dataNascimento date not null,
    id_curso integer,
    primary key (id_aluno),
    foreign key (id_curso) references cursos(id_curso)
@@ -81,7 +81,7 @@ create table matriculas(
     id_turma integer,
     id_aluno integer,
     status char(10),
-    nota_final decimal,
+    nota_final decimal(4,2),
     primary key (id_matricula),
     foreign key(id_aluno) references alunos(id_aluno),
     foreign key(id_turma) references turmas(id_turma)
@@ -91,7 +91,7 @@ create table historicoAluno(
 	id_historico smallint auto_increment,
     id_aluno integer,
     id_disciplina smallint,
-    notaFinal decimal,
+    notaFinal decimal(4,2),
     status char(10),
     dataConclusao date,
     primary key (id_historico),

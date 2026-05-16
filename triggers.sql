@@ -23,3 +23,25 @@ o Se o status mudar para 'Aprovado', insere no HistoricoAluno.*/
 matricular em uma nova disciplina, o sistema deve impedir a matrícula e
 registrar o evento em LogsSistema.
 */
+
+/*Valida CPF e salva no formato correto*/
+
+DELIMITER $$
+
+CREATE TRIGGER trg_valida_formata_cpf
+BEFORE INSERT ON alunos
+FOR EACH ROW
+BEGIN
+    SET NEW.cpf = REPLACE(REPLACE(NEW.cpf, '.', ''), '-', '');
+    IF NEW.cpf NOT REGEXP '^[0-9]{11}$' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'CPF inválido.';
+    END IF;
+    SET NEW.cpf = CONCAT(
+        SUBSTRING(NEW.cpf,1,3), '.', 
+        SUBSTRING(NEW.cpf,4,3), '.', 
+        SUBSTRING(NEW.cpf,7,3), '-', 
+        SUBSTRING(NEW.cpf,10,2)
+    );
+END$$
+DELIMITER ;
