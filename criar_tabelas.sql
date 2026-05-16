@@ -4,21 +4,21 @@ create database academico;
 use academico;
 
 create table cursos(
-	id_curso integer,
+	id_curso integer auto_increment,
     nome varchar(100),
     coordenador varchar (100),
     cargaHorariaTotal smallint,
     primary key (id_curso)
 );
 create table professores(
-	id_professor integer,
+	id_professor integer auto_increment,
     nome varchar(200),
     titulacao varchar(100),
     email varchar(100),
 	primary key(id_professor)
 );
 create table alunos(
-   id_aluno integer,
+   id_aluno integer auto_increment,
    nome varchar(200),
    cpf char(13),
    email varchar(100),
@@ -28,7 +28,7 @@ create table alunos(
    foreign key (id_curso) references cursos(id_curso)
 );
 create table curriculos(
-	id_curriculo smallint,
+	id_curriculo smallint auto_increment,
     id_curso integer,
     anoInicio smallint,
     versao smallint,
@@ -36,7 +36,7 @@ create table curriculos(
     foreign key (id_curso) references cursos(id_curso)
 );
 create table disciplinas(
-	id_disciplina smallint,
+	id_disciplina smallint auto_increment,
     nomeDisciplina varchar (100),
     cargaHoraria smallint,
     primary key (id_disciplina)
@@ -50,21 +50,21 @@ create table disciplinas_curriculo(
     primary key(id_disciplina, id_curriculo)
 );
 create table pre_requisitos(
-	id_disciplina_principal smallint,
+	id_disciplina_principal smallint ,
 	id_disciplina_requisito smallint,
 	primary key(id_disciplina_requisito, id_disciplina_principal),
     foreign key (id_disciplina_principal) references disciplinas(id_disciplina),
     foreign key (id_disciplina_requisito) references disciplinas(id_disciplina)
 );
 create table semestres(
-	id_semestre smallint,
+	id_semestre smallint auto_increment,
     codigo_semestre integer,
     aberto_matricula char(1),
     primary key (id_semestre)
 );
 
 create table turmas(
-	id_turma integer,
+	id_turma integer auto_increment,
     id_disciplina smallint,
     id_professor integer,
     id_semestre smallint,
@@ -77,7 +77,7 @@ create table turmas(
 );
 
 create table matriculas(
-	id_matricula integer,
+	id_matricula integer auto_increment,
     id_turma integer,
     id_aluno integer,
     status char(10),
@@ -88,7 +88,7 @@ create table matriculas(
 );
 
 create table historicoAluno(
-	id_historico smallint,
+	id_historico smallint auto_increment,
     id_aluno integer,
     id_disciplina smallint,
     notaFinal decimal,
@@ -100,7 +100,7 @@ create table historicoAluno(
 );
 
 create table usuarios(
-	id_usuario integer,
+	id_usuario integer auto_increment,
     nome varchar(250),
     email varchar(250),
     tipoUsuario varchar(50),
@@ -109,7 +109,7 @@ create table usuarios(
 );
 
 create table logsSistema(
-	id_log integer,
+	id_log integer auto_increment,
     id_usuario integer,
     acao varchar (150),
     tabelaAfetada varchar(50),
