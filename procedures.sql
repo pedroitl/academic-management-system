@@ -242,6 +242,32 @@ DELIMITER ;
 /*sp_ReabrirPeriodoMatricula
 >> o Reabre um semestre, definindo AbertoParaMatricula = TRUE.*/
 
+DELIMITER $$
+
+create procedure sp_ReabrirPeriodoMatricula(in v_id_semestre int)
+
+begin
+	declare v_quantidade int;
+    
+	select count(*)
+	into v_quantidade
+	from semestres
+	where id_semestre = v_id_semestre
+	and aberto_matricula = "N";
+
+
+	if  v_quantidade > 0 then
+		update semestres
+		set aberto_matricula = "S"
+		where id_semestre = v_id_semestre;
+		
+	end if;
+
+end $$
+
+DELIMITER ;
+
+
 /*Procedimentos de Retorno (OUT)
 
 fn_CalcularCoeficienteRendimento(p_ID_Aluno)
