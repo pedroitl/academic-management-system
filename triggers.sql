@@ -217,10 +217,20 @@ CREATE TRIGGER trg_AtualizarStatusAutomaticamente
 AFTER UPDATE ON matriculas
 FOR EACH ROW
 BEGIN
-	IF (SELECT id_disciplina FROM turmas WHERE id_turma = NEW.id_turma
+	DECLARE total_disciplinas INT;
+    
+    SELECT COUNT(*) INTO total_disciplinas
+	FROM matriculas WHERE id_aluno = NEW.id_aluno AND status = 'cursando';
+    
+	IF total_disciplinas > 6 THEN
+		INSERT INTO LogsSistema (id_usuario,acao, tabelaAfetada, dataHora, descricao)
+	VALUES (1,'ERROR','matriculas',NOW(),'Erro: Houve uma tentativa de cadastro de aluno em uma turma, porém o aluno referente já pois 6 disciplinas com status "cursando", o que não é aceito.');
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Erro: Aluno já atingiu o limite de 6 turmas.';
     END IF;
 END $
 DELIMITER ;
+
 /*Incremento para automatizar a inserção de dados em usuario 
 ---->by leh*/
 
