@@ -110,11 +110,10 @@ create table usuarios(
 
 create table logsSistema(
 	id_log integer auto_increment,
-    id_usuario integer null,
+    usuario varchar(250),
     acao varchar (150),
     tabelaAfetada varchar(50),
     dataHora datetime,
     descricao varchar(500),
-    primary key (id_log),
-	foreign key (id_usuario) references usuarios(id_usuario)
+    primary key (id_log)
 );

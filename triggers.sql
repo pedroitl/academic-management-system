@@ -23,8 +23,8 @@ AFTER UPDATE ON alunos
 FOR EACH ROW
 BEGIN
 	IF OLD.email <> NEW.email THEN
-		INSERT INTO LogsSistema (id_usuario,acao, tabelaAfetada, dataHora, descricao)
-		VALUES (1,'Alteração de email','alunos',NOW(),'O email de um aluno foi alterado');
+		INSERT INTO LogsSistema (usuario,acao, tabelaAfetada, dataHora, descricao)
+		VALUES (NEW.nome,'Alteração de email','alunos',NOW(),'O email de um aluno foi alterado');
     END IF;
 END $
 DELIMITER ;
@@ -40,8 +40,8 @@ CREATE TRIGGER trg_LogInsertAlunos
 AFTER INSERT ON alunos
 FOR EACH ROW
 BEGIN
-	INSERT INTO LogsSistema (id_usuario,acao, tabelaAfetada, dataHora, descricao)
-	VALUES (1,'Insert em Alunos','alunos',NOW(),'Houve uma inserção na tabela Alunos');
+	INSERT INTO LogsSistema (usuario,acao, tabelaAfetada, dataHora, descricao)
+	VALUES ("Sistema",'Insert em Alunos','alunos',NOW(),'Houve uma inserção na tabela Alunos');
 END $
 DELIMITER ;
 
@@ -50,8 +50,8 @@ CREATE TRIGGER trg_LogUpdateAlunos
 AFTER UPDATE ON alunos
 FOR EACH ROW
 BEGIN
-	INSERT INTO LogsSistema (id_usuario,acao, tabelaAfetada, dataHora, descricao)
-	VALUES (1,'Update em Alunos','alunos',NOW(),'Houve uma atualização na tabela Alunos');
+	INSERT INTO LogsSistema (usuario,acao, tabelaAfetada, dataHora, descricao)
+	VALUES (new.nome,'Update em Alunos','alunos',NOW(),'Houve uma atualização na tabela Alunos');
 END $
 DELIMITER ;
 
@@ -60,8 +60,8 @@ CREATE TRIGGER trg_LogDeleteAlunos
 AFTER DELETE ON alunos
 FOR EACH ROW
 BEGIN
-	INSERT INTO LogsSistema (id_usuario,acao, tabelaAfetada, dataHora, descricao)
-	VALUES (1,'Delete em Alunos','alunos',NOW(),'Houve uma exclusão na tabela Alunos');
+	INSERT INTO LogsSistema (usuario,acao, tabelaAfetada, dataHora, descricao)
+	VALUES ("Sistema",'Delete em Alunos','alunos',NOW(),'Houve uma exclusão na tabela Alunos');
 END $
 DELIMITER ;
 
@@ -71,8 +71,8 @@ CREATE TRIGGER trg_LogInsertTurmas
 AFTER INSERT ON turmas
 FOR EACH ROW
 BEGIN
-	INSERT INTO LogsSistema (id_usuario,acao, tabelaAfetada, dataHora, descricao)
-	VALUES (1,'Insert em turmas','turmas',NOW(),'Houve uma inserção na tabela turmas');
+	INSERT INTO LogsSistema (usuario,acao, tabelaAfetada, dataHora, descricao)
+	VALUES ("Sistema",'Insert em turmas','turmas',NOW(),'Houve uma inserção na tabela turmas');
 END $
 DELIMITER ;
 
@@ -81,8 +81,8 @@ CREATE TRIGGER trg_LogUpdateTurmas
 AFTER UPDATE ON turmas
 FOR EACH ROW
 BEGIN
-	INSERT INTO LogsSistema (id_usuario,acao, tabelaAfetada, dataHora, descricao)
-	VALUES (1,'Update em turmas','turmas',NOW(),'Houve uma atualização na tabela turmas');
+	INSERT INTO LogsSistema (usuario,acao, tabelaAfetada, dataHora, descricao)
+	VALUES ("Sistema",'Update em turmas','turmas',NOW(),'Houve uma atualização na tabela turmas');
 END $
 DELIMITER ;
 
@@ -91,8 +91,8 @@ CREATE TRIGGER trg_LogDeleteTurmas
 AFTER DELETE ON turmas
 FOR EACH ROW
 BEGIN
-	INSERT INTO LogsSistema (id_usuario,acao, tabelaAfetada, dataHora, descricao)
-	VALUES (1,'Delete em turmas','turmas',NOW(),'Houve uma exclusão na tabela turmas');
+	INSERT INTO LogsSistema (usuario,acao, tabelaAfetada, dataHora, descricao)
+	VALUES ("Sistema",'Delete em turmas','turmas',NOW(),'Houve uma exclusão na tabela turmas');
 END $
 DELIMITER ;
 
@@ -102,8 +102,8 @@ CREATE TRIGGER trg_LogInsertProfessores
 AFTER INSERT ON professores
 FOR EACH ROW
 BEGIN
-	INSERT INTO LogsSistema (id_usuario,acao, tabelaAfetada, dataHora, descricao)
-	VALUES (1,'Insert em professores','professores',NOW(),'Houve uma inserção na tabela professores');
+	INSERT INTO LogsSistema (usuario,acao, tabelaAfetada, dataHora, descricao)
+	VALUES ("Sistema",'Insert em professores','professores',NOW(),'Houve uma inserção na tabela professores');
 END $
 DELIMITER ;
 
@@ -112,8 +112,8 @@ CREATE TRIGGER trg_LogUpdateProfessores
 AFTER UPDATE ON professores
 FOR EACH ROW
 BEGIN
-	INSERT INTO LogsSistema (id_usuario,acao, tabelaAfetada, dataHora, descricao)
-	VALUES (1,'Update em professores','professores',NOW(),'Houve uma atualização na tabela professores');
+	INSERT INTO LogsSistema (usuario,acao, tabelaAfetada, dataHora, descricao)
+	VALUES (NEW.nome,'Update em professores','professores',NOW(),'Houve uma atualização na tabela professores');
 END $
 DELIMITER ;
 
@@ -122,8 +122,8 @@ CREATE TRIGGER trg_LogDeleteProfessores
 AFTER DELETE ON professores
 FOR EACH ROW
 BEGIN
-	INSERT INTO LogsSistema (id_usuario,acao, tabelaAfetada, dataHora, descricao)
-	VALUES (1,'Delete em professores','professores',NOW(),'Houve uma exclusão na tabela professores');
+	INSERT INTO LogsSistema (usuario,acao, tabelaAfetada, dataHora, descricao)
+	VALUES ("Sistema",'Delete em professores','professores',NOW(),'Houve uma exclusão na tabela professores');
 END $
 DELIMITER ;
 
@@ -133,8 +133,8 @@ CREATE TRIGGER trg_LogInsertCursos
 AFTER INSERT ON cursos
 FOR EACH ROW
 BEGIN
-	INSERT INTO LogsSistema (id_usuario,acao, tabelaAfetada, dataHora, descricao)
-	VALUES (1,'Insert em cursos','cursos',NOW(),'Houve uma inserção na tabela cursos');
+	INSERT INTO LogsSistema (usuario,acao, tabelaAfetada, dataHora, descricao)
+	VALUES ("Sistema",'Insert em cursos','cursos',NOW(),'Houve uma inserção na tabela cursos');
 END $
 DELIMITER ;
 
@@ -143,8 +143,8 @@ CREATE TRIGGER trg_LogUpdateCursos
 AFTER UPDATE ON cursos
 FOR EACH ROW
 BEGIN
-	INSERT INTO LogsSistema (id_usuario,acao, tabelaAfetada, dataHora, descricao)
-	VALUES (1,'Update em cursos','cursos',NOW(),'Houve uma atualização na tabela cursos');
+	INSERT INTO LogsSistema (usuario,acao, tabelaAfetada, dataHora, descricao)
+	VALUES ("Sistema",'Update em cursos','cursos',NOW(),'Houve uma atualização na tabela cursos');
 END $
 DELIMITER ;
 
@@ -153,8 +153,8 @@ CREATE TRIGGER trg_LogDeleteCursos
 AFTER DELETE ON cursos
 FOR EACH ROW
 BEGIN
-	INSERT INTO LogsSistema (id_usuario,acao, tabelaAfetada, dataHora, descricao)
-	VALUES (1,'Delete em cursos','cursos',NOW(),'Houve uma exclusão na tabela cursos');
+	INSERT INTO LogsSistema (usuario,acao, tabelaAfetada, dataHora, descricao)
+	VALUES ("Sistema",'Delete em cursos','cursos',NOW(),'Houve uma exclusão na tabela cursos');
 END $
 DELIMITER ;
 
@@ -164,8 +164,8 @@ CREATE TRIGGER trg_LogInsertDisciplinas
 AFTER INSERT ON disciplinas
 FOR EACH ROW
 BEGIN
-	INSERT INTO LogsSistema (id_usuario,acao, tabelaAfetada, dataHora, descricao)
-	VALUES (1,'Insert em disciplinas','disciplinas',NOW(),'Houve uma inserção na tabela disciplinas');
+	INSERT INTO LogsSistema (usuario,acao, tabelaAfetada, dataHora, descricao)
+	VALUES ("Sistema",'Insert em disciplinas','disciplinas',NOW(),'Houve uma inserção na tabela disciplinas');
 END $
 DELIMITER ;
 
@@ -174,8 +174,8 @@ CREATE TRIGGER trg_LogUpdateDisciplinas
 AFTER UPDATE ON disciplinas
 FOR EACH ROW
 BEGIN
-	INSERT INTO LogsSistema (id_usuario,acao, tabelaAfetada, dataHora, descricao)
-	VALUES (1,'Update em disciplinas','disciplinas',NOW(),'Houve uma atualização na tabela disciplinas');
+	INSERT INTO LogsSistema (usuario,acao, tabelaAfetada, dataHora, descricao)
+	VALUES ("Sistema",'Update em disciplinas','disciplinas',NOW(),'Houve uma atualização na tabela disciplinas');
 END $
 DELIMITER ;
 
@@ -184,8 +184,8 @@ CREATE TRIGGER trg_LogDeleteDisciplinas
 AFTER DELETE ON disciplinas
 FOR EACH ROW
 BEGIN
-	INSERT INTO LogsSistema (id_usuario,acao, tabelaAfetada, dataHora, descricao)
-	VALUES (1,'Delete em disciplinas','disciplinas',NOW(),'Houve uma exclusão na tabela disciplinas');
+	INSERT INTO LogsSistema (usuario,acao, tabelaAfetada, dataHora, descricao)
+	VALUES ("Sistema",'Delete em disciplinas','disciplinas',NOW(),'Houve uma exclusão na tabela disciplinas');
 END $
 DELIMITER ;
 
@@ -218,13 +218,16 @@ AFTER UPDATE ON matriculas
 FOR EACH ROW
 BEGIN
 	DECLARE total_disciplinas INT;
+    DECLARE aluno varchar(250);
     
     SELECT COUNT(*) INTO total_disciplinas
 	FROM matriculas WHERE id_aluno = NEW.id_aluno AND status = 'cursando';
     
+    SELECT nome into aluno from alunos where id_aluno= NEW.id_aluno;
+    
 	IF total_disciplinas > 6 THEN
-		INSERT INTO LogsSistema (id_usuario,acao, tabelaAfetada, dataHora, descricao)
-	VALUES (1,'ERROR','matriculas',NOW(),'Erro: Houve uma tentativa de cadastro de aluno em uma turma, porém o aluno referente já pois 6 disciplinas com status "cursando", o que não é aceito.');
+		INSERT INTO LogsSistema (usuario,acao, tabelaAfetada, dataHora, descricao)
+	VALUES (aluno,'ERROR','matriculas',NOW(),'Erro: Houve uma tentativa de cadastro de aluno em uma turma, porém o aluno referente já pois 6 disciplinas com status "cursando", o que não é aceito.');
         SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'Erro: Aluno já atingiu o limite de 6 turmas.';
     END IF;
