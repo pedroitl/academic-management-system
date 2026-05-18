@@ -257,7 +257,7 @@ BEGIN
 END $
 DELIMITER ;
 
-DELIMITER $$
+DELIMITER $
 
 CREATE TRIGGER trg_historico_insert
 AFTER INSERT ON matriculas
@@ -266,33 +266,14 @@ BEGIN
     DECLARE disciplina_turma INT;
 
     IF NEW.status IN ('Aprovado', 'Reprovado') THEN
-
-        SELECT id_disciplina
-        INTO disciplina_turma
-        FROM turmas
-        WHERE id_turma = NEW.id_turma;
-
-        INSERT INTO historicoAluno(
-            id_aluno,
-            id_disciplina,
-            notaFinal,
-            status,
-            dataConclusao
-        )
-        VALUES(
-            NEW.id_aluno,
-            disciplina_turma,
-            NEW.nota_final,
-            NEW.status,
-            CURDATE()
-        );
-
+        SELECT id_disciplina INTO disciplina_turma FROM turmas WHERE id_turma = NEW.id_turma;
+        INSERT INTO historicoAluno(id_aluno,id_disciplina,notaFinal,status,dataConclusao)
+        VALUES(NEW.id_aluno, disciplina_turma,NEW.nota_final,NEW.status,CURDATE());
     END IF;
-END$$
-
+END$
 DELIMITER ;
 
-DELIMITER $$
+DELIMITER $
 
 CREATE TRIGGER trg_historico_aluno
 AFTER UPDATE ON matriculas
@@ -300,33 +281,14 @@ FOR EACH ROW
 BEGIN
     DECLARE disciplina_turma INT;
 
-    -- Só executa se mudou para aprovado ou reprovado
     IF NEW.status IN ('Aprovado', 'Reprovado')
        AND OLD.status <> NEW.status THEN
 
-        -- Busca a disciplina da turma
-        SELECT id_disciplina
-        INTO disciplina_turma
-        FROM turmas
-        WHERE id_turma = NEW.id_turma;
-
-        -- Insere no histórico
-        INSERT INTO historicoAluno(
-            id_aluno,
-            id_disciplina,
-            notaFinal,
-            status,
-            dataConclusao
-        )
-        VALUES(
-            NEW.id_aluno,
-            disciplina_turma,
-            NEW.nota_final,
-            NEW.status,
-            CURDATE()
-        );
+        SELECT id_disciplina INTO disciplina_turma FROM turmas WHERE id_turma = NEW.id_turma;
+        INSERT INTO historicoAluno(id_aluno, id_disciplina, notaFinal, status, dataConclusao)
+        VALUES(NEW.id_aluno, disciplina_turma, NEW.nota_final, NEW.status, CURDATE());
 
     END IF;
-END$$
+END$
 
 DELIMITER ;
