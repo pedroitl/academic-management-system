@@ -268,13 +268,50 @@ end $$
 DELIMITER ;
 
 
+
+
+
 /*Procedimentos de Retorno (OUT)
 
 fn_CalcularCoeficienteRendimento(p_ID_Aluno)
 Retorna a média das notas ponderada das disciplinas concluídas.*/
 
+DELIMITER $$
+
+create procedure fn_CalcularCoeficienteRendimento(in p_ID_Aluno int, out p_coeficiente decimal(10,2))
+
+begin
+	
+    DECLARE v_numerador decimal(10,2);
+    DECLARE v_denominador decimal(10,2);
+    
+	
+    select sum(m.nota_final * d.cargaHoraria) ,sum(d.cargaHoraria) into v_numerador , v_denominador
+	from matriculas as m
+	inner join turmas as t on m.id_turma = t.id_turma
+	inner join disciplinas as d on t.id_disciplina = d.id_disciplina
+	where m.status = "Aprovado" and
+		m.id_aluno = p_ID_Aluno;
+        
+	if v_denominador > 0 then
+		set p_coeficiente = v_numerador / v_denominador;
+        
+	end if;
+
+end $$
+
+DELIMITER ;
+
+set @coef := 0;
+
+call fn_CalcularCoeficienteRendimento(1, @coef);
+
+select @coef;
+
 /*fn_ContarDisciplinasPendentes(p_ID_Aluno, p_ID_Curso)
 Retorna quantas disciplinas do currículo o aluno ainda não cursou.*/
+
+
 
 /*fn_ListarDisciplinasAprovadas(p_ID_Aluno)
 Retorna as disciplinas em que o aluno foi aprovado.*/
