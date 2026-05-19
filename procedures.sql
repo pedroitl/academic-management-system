@@ -45,15 +45,15 @@ BEGIN
       FROM semestres s
      WHERE s.id_semestre = v_id_semestre;
 
-    IF v_semestre_aberto <> 'S' THEN
-        ROLLBACK;
-        LEAVE proc_end;
-    END IF;
+    IF TRIM(UPPER(v_semestre_aberto)) <> 'S' THEN
+		SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = 'Semestre fechado';
+	END IF;
 
-    IF v_vagas_ocupadas >= v_max_vagas THEN
-        ROLLBACK;
-        LEAVE proc_end;
-    END IF;
+    IF IFNULL(v_vagas_ocupadas,0) >= IFNULL(v_max_vagas,0) THEN
+        SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = 'Turma sem vagas';
+	END IF;
 
     SELECT COUNT(*)
       INTO v_qtd_requisitos_total
@@ -62,19 +62,20 @@ BEGIN
 
     IF v_qtd_requisitos_total > 0 THEN
 		
-        
         SELECT COUNT(*)
 			INTO v_qtd_requisitos_ok
 			FROM pre_requisitos pr
 			JOIN historicoAluno h
 			ON h.id_disciplina = pr.id_disciplina_requisito
 			AND h.id_aluno = p_ID_Aluno
-			AND h.status = 'APROVADO'
+			AND UPPER(h.status) = 'APROVADO'
          WHERE pr.id_disciplina_principal = v_id_disciplina;
 
         IF v_qtd_requisitos_ok < v_qtd_requisitos_total THEN
+			
             ROLLBACK;
-            LEAVE proc_end;
+            SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'Aluno não cursou as disciplinas pré-requisitos';
         END IF;
     END IF;
     
@@ -88,8 +89,8 @@ BEGIN
        AND m.status = 'CURSANDO';
 
     IF v_qtd_matriculas_mesma_disciplina > 0 THEN
-        ROLLBACK;
-        LEAVE proc_end;
+        SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = 'Aluno já está cursando nessa turma.';
     END IF;
 
     INSERT INTO matriculas (
@@ -127,24 +128,16 @@ CREATE PROCEDURE sp_LancarNotas(IN p_ID_Matricula int, IN p_NotaFinal decimal(10
 BEGIN
 	DECLARE v_quantidade_matricula INT;
     DECLARE v_status varchar(20);
-    
 		select count(*) into v_quantidade_matricula
         from matriculas where id_matricula = p_ID_Matricula;
-        
         if v_quantidade_matricula = 0 then
 			set v_status = v_status;
-            
 		else
-        
 			if p_NotaFinal >= 7 then
 				set v_status = 'APROVADO';
-			
             else 
 				set v_status = 'REPROVADO';
-                
 			end if;
-            
-		
         update matriculas
         set nota_final =  p_NotaFinal ,
 			status = v_status

@@ -274,7 +274,8 @@ END$
 DELIMITER ;
 
 DELIMITER $
-
+/*Incremento para automatizar a inserção de dados na tabela historicoAluno 
+---->by leh*/
 CREATE TRIGGER trg_historico_aluno
 AFTER UPDATE ON matriculas
 FOR EACH ROW

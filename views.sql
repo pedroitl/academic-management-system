@@ -42,7 +42,6 @@ Exibe as 20 operações mais recentes da tabela LogsSistema.*/
 
 create view vw_LogAuditoria as
 select * 
-from logssistema
+from logsSistema
 order by dataHora desc
 limit 20;
-select * from VIEW_logs_recentes;

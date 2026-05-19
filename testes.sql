@@ -5,13 +5,40 @@ o Testar matrícula em disciplina que exige pré-requisito ainda não cursado
 o Testar matrícula em disciplina sem pré-requisitos (deve ser concluída
 com sucesso).*/
 
+/*Verifica disciplina que não estão matriculados em uma disciplina*/
+SELECT d1.id_disciplina AS disciplina, d2.id_disciplina AS pre_requisito
+FROM pre_requisitos p JOIN disciplinas d1 ON p.id_disciplina_principal = d1.id_disciplina
+JOIN disciplinas d2 ON p.id_disciplina_requisito = d2.id_disciplina;
+
+
+
+CALL sp_RegistrarMatricula(2, 2);
+
+
+
 /*2. Simular falta de vaga e verificar rollback
 o Tentar matricular um aluno quando a turma já está cheia (esperar
 ROLLBACK e mensagem de erro).*/
 
+/*Verifica alunos que não estão matriculados em uma disciplina*/
+SELECT a.id_aluno FROM alunos a
+WHERE NOT EXISTS ( SELECT 1 FROM matriculas m INNER JOIN turmas t ON m.id_turma = t.id_turma
+    WHERE m.id_aluno = a.id_aluno AND t.id_disciplina = 1);
+/*Verifica turmas que estão com as vagas preenchidas*/
+SELECT t.id_turma, t.id_disciplina, t.max_vagas, t.vagas_ocupadas, s.codigo_semestre
+FROM turmas t JOIN disciplinas d ON t.id_disciplina = d.id_disciplina
+JOIN semestres s ON t.id_semestre = s.id_semestre
+WHERE t.vagas_ocupadas >= t.max_vagas;
+
+CALL sp_RegistrarMatricula(5, 310);
+
+select * from turmas where id_disciplina=310;
+select * from semestres where id_semestre=4;
+
 /*3. Trancar matrícula e conferir decremento de vaga
 o Trancar uma matrícula ativa e confirmar se o campo VagasOcupadas da
 turma foi decrementado corretamente.*/
+
 
 /*4. Lançar notas e confirmar alteração automática de status
 o Inserir notas e verificar se o status muda automaticamente para
@@ -58,3 +85,8 @@ restrições ou necessidade de ajustes.*/
 /*13. Simular erro proposital para validar rollback
 o Forçar uma falha dentro de sp_RegistrarMatricula (ex.: turma
 inexistente) e confirmar que nenhuma alteração parcial ficou gravada.*/
+
+SELECT t.id_turma, t.id_disciplina, s.codigo_semestre, s.aberto_matricula
+FROM turmas t JOIN disciplinas d ON t.id_disciplina = d.id_disciplina
+JOIN semestres s ON t.id_semestre = s.id_semestre
+WHERE s.aberto_matricula = 'N';
