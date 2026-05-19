@@ -68,7 +68,7 @@ BEGIN
 			JOIN historicoAluno h
 			ON h.id_disciplina = pr.id_disciplina_requisito
 			AND h.id_aluno = p_ID_Aluno
-			AND UPPER(h.status) = 'Aprovado'
+			AND UPPER(h.status) = 'APROVADO'
          WHERE pr.id_disciplina_principal = v_id_disciplina;
 
         IF v_qtd_requisitos_ok < v_qtd_requisitos_total THEN
@@ -86,7 +86,7 @@ BEGIN
         ON t2.id_turma = m.id_turma
      WHERE m.id_aluno = p_ID_Aluno
        AND t2.id_disciplina = v_id_disciplina
-       AND m.status = 'Cursando';
+       AND UPPER(m.status) = 'CURSANDO';
 
     IF v_qtd_matriculas_mesma_disciplina > 0 THEN
         SIGNAL SQLSTATE '45000'
@@ -220,7 +220,7 @@ begin
         from matriculas as m
         inner join turmas as t on m.id_turma = t.id_turma
         inner join disciplinas as d on t.id_disciplina = d.id_disciplina
-        where m.status = "Aprovado"
+        where UPPER(m.status) = "APROVADO"
         and m.id_aluno = p_ID_Aluno;
      
      else 
@@ -246,7 +246,7 @@ begin
 	into v_quantidade
 	from semestres
 	where id_semestre = v_id_semestre
-	and aberto_matricula = "N";
+	and UPPER(aberto_matricula) = "N";
 
 
 	if  v_quantidade > 0 then
@@ -283,7 +283,7 @@ begin
 	from matriculas as m
 	inner join turmas as t on m.id_turma = t.id_turma
 	inner join disciplinas as d on t.id_disciplina = d.id_disciplina
-	where m.status = "Aprovado" and
+	where UPPER(m.status) = "APROVADO" and
 		m.id_aluno = p_ID_Aluno;
         
 	if v_denominador > 0 then
