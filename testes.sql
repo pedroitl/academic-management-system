@@ -58,7 +58,11 @@ CALL sp_RegistrarMatricula(1, 90);
 /*3. Trancar matrícula e conferir decremento de vaga
 o Trancar uma matrícula ativa e confirmar se o campo VagasOcupadas da
 turma foi decrementado corretamente.*/
-call sp_TrancarMatricula(51,5);
+
+select * from matriculas where UPPER(status)="CURSANDO";
+select * from turmas where id_turma=20;
+
+call sp_TrancarMatricula(4,4);
 
 /*4. Lançar notas e confirmar alteração automática de status
 o Inserir notas e verificar se o status muda automaticamente para
