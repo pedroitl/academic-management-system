@@ -306,11 +306,83 @@ select @coef;
 /*fn_ContarDisciplinasPendentes(p_ID_Aluno, p_ID_Curso)
 Retorna quantas disciplinas do currículo o aluno ainda não cursou.*/
 
+DELIMITER $$
+
+create procedure fn_ContarDisciplinasPendentes( in p_ID_Aluno int , in p_ID_Curso int, out p_qtd_pendentes int)
+
+begin
+
+	select count(*)
+    into p_qtd_pendentes
+    from cursos               as c
+    join curriculos           as cr on cr.id_curso      = c.id_curso
+    join disciplinas_curriculo as dc on dc.id_curriculo = cr.id_curriculo
+    join disciplinas          as d  on d.id_disciplina  = dc.id_disciplina
+    join view_historico_aluno as v  on v.id_disciplina  = d.id_disciplina
+    where c.id_curso = p_ID_Curso
+      and v.id_aluno = p_ID_Aluno
+      and v.status   = 'Pendente';
+	
+
+end $$
+
+
+DELIMITER ;
 
 
 /*fn_ListarDisciplinasAprovadas(p_ID_Aluno)
 Retorna as disciplinas em que o aluno foi aprovado.*/
 
 
+DELIMITER $$ 
+
+create procedure fn_ListarDisciplinasAprovadas( in p_ID_Aluno int)
+
+
+begin
+	
+    select distinct a.id_aluno, a.nome as "nome_aluno", ha.status,d.nomeDisciplina
+	from historicoaluno as ha
+	inner join disciplinas as d on ha.id_disciplina = d.id_disciplina
+	inner join alunos as a on ha.id_aluno = a.id_aluno
+	where ha.status = "Aprovado"
+    and a.id_aluno = p_ID_Aluno;
+	
+
+end $$
+
+DELIMITER ;
+
+CALL fn_ListarDisciplinasAprovadas(4);
+
+
 /*fn_TotalHorasConcluidas(p_ID_Aluno)
 Retorna a soma da carga horária das disciplinas já concluídas*/
+
+DELIMITER $$
+
+create procedure fn_totalhorasconcluidas(
+    in  p_id_aluno int,
+    out p_total_horas int
+)
+begin
+
+    select
+        sum(d.cargahoraria)
+    into p_total_horas
+    from historicoaluno as h
+    inner join alunos as a on h.id_aluno = a.id_aluno
+    inner join disciplinas as d 
+            on d.id_disciplina = h.id_disciplina
+    where h.id_aluno = p_id_aluno
+      and h.status   = 'aprovado';
+
+end $$
+
+DELIMITER ;
+
+set @horas := 0;
+
+call fn_totalhorasconcluidas(7, @horas);
+
+select @horas;
