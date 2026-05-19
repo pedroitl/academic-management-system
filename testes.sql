@@ -13,9 +13,6 @@ JOIN turmas t ON t.id_disciplina = d1.id_disciplina;
 
 CALL sp_RegistrarMatricula(2, 90);
 
-
-
-
 /*2. Simular falta de vaga e verificar rollback
 o Tentar matricular um aluno quando a turma já está cheia (esperar
 ROLLBACK e mensagem de erro).*/

@@ -221,13 +221,13 @@ BEGIN
     DECLARE aluno varchar(250);
     
     SELECT COUNT(*) INTO total_disciplinas
-	FROM matriculas WHERE id_aluno = NEW.id_aluno AND status = 'cursando';
+	FROM matriculas WHERE id_aluno = NEW.id_aluno AND status = 'Cursando';
     
     SELECT nome into aluno from alunos where id_aluno= NEW.id_aluno;
     
 	IF total_disciplinas > 6 THEN
 		INSERT INTO LogsSistema (usuario,acao, tabelaAfetada, dataHora, descricao)
-	VALUES (aluno,'ERROR','matriculas',NOW(),'Erro: Houve uma tentativa de cadastro de aluno em uma turma, porém o aluno referente já pois 6 disciplinas com status "cursando", o que não é aceito.');
+	VALUES ('ALUNO','ERROR','matriculas',NOW(),'Erro: Houve uma tentativa de cadastro de aluno em uma turma, porém o aluno referente já possui 6 disciplinas com status "cursando", o que não é aceito.');
         SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'Erro: Aluno já atingiu o limite de 6 turmas.';
     END IF;
@@ -243,7 +243,7 @@ AFTER INSERT ON professores
 FOR EACH ROW
 BEGIN
 	INSERT INTO usuarios(nome,email, tipoUsuario,senhaHash)
-    VALUES(NEW.nome,NEW.email,'PROFESSOR',SHA2('123456', 256));
+    VALUES(NEW.nome,NEW.email,'PROFESSOR',SHA2('123456', 256));s
 END $
 DELIMITER ;
 
