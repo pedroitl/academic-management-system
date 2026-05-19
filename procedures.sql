@@ -166,6 +166,7 @@ begin
 	DECLARE v_quantidade_matricula INT;
     DECLARE v_situacao varchar(20);
     DECLARE v_id_turma int;
+    declare usuario varchar(250);
     
 		select count(*) into v_quantidade_matricula
         from matriculas where id_matricula = p_ID_Matricula;
@@ -188,8 +189,9 @@ begin
             set vagas_ocupadas = vagas_ocupadas - 1
             where id_turma = v_id_turma;
             
-            insert into logssistema(id_usuario,acao,tabelaAfetada,dataHora)
-            values(p_ID_Usuario,"trancar_matricula","matriculas",now());
+            select nome into usuario from alunos where id_aluno=p_ID_Usuario;
+            insert into logssistema(usuario,acao,tabelaAfetada,dataHora)
+            values(usuario,"trancar_matricula","matriculas",now());
 		
         end if;
         

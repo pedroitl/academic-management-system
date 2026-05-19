@@ -6,13 +6,13 @@ o Testar matrícula em disciplina sem pré-requisitos (deve ser concluída
 com sucesso).*/
 
 /*Verifica disciplina que não estão matriculados em uma disciplina*/
-SELECT d1.id_disciplina AS disciplina, d2.id_disciplina AS pre_requisito
+SELECT t.id_turma, d1.id_disciplina AS disciplina,d2.id_disciplina AS pre_requisito
 FROM pre_requisitos p JOIN disciplinas d1 ON p.id_disciplina_principal = d1.id_disciplina
-JOIN disciplinas d2 ON p.id_disciplina_requisito = d2.id_disciplina;
+JOIN disciplinas d2 ON p.id_disciplina_requisito = d2.id_disciplina
+JOIN turmas t ON t.id_disciplina = d1.id_disciplina;
 
+CALL sp_RegistrarMatricula(2, 90);
 
-
-CALL sp_RegistrarMatricula(2, 2);
 
 
 
@@ -20,21 +20,27 @@ CALL sp_RegistrarMatricula(2, 2);
 o Tentar matricular um aluno quando a turma já está cheia (esperar
 ROLLBACK e mensagem de erro).*/
 
-/*Verifica alunos que não estão matriculados em uma disciplina*/
+/*Verifica alunos que não estão matriculados em uma turma*/
 SELECT a.id_aluno FROM alunos a
-WHERE NOT EXISTS ( SELECT 1 FROM matriculas m INNER JOIN turmas t ON m.id_turma = t.id_turma
-    WHERE m.id_aluno = a.id_aluno AND t.id_disciplina = 1);
+WHERE NOT EXISTS ( SELECT 1 FROM matriculas m JOIN turmas t ON m.id_turma = t.id_turma
+    WHERE m.id_aluno = a.id_aluno AND t.id_turma = 40) order by a.id_aluno;
+    
 /*Verifica turmas que estão com as vagas preenchidas*/
 SELECT t.id_turma, t.id_disciplina, t.max_vagas, t.vagas_ocupadas, s.codigo_semestre
 FROM turmas t JOIN disciplinas d ON t.id_disciplina = d.id_disciplina
 JOIN semestres s ON t.id_semestre = s.id_semestre
 WHERE t.vagas_ocupadas >= t.max_vagas;
 
-CALL sp_RegistrarMatricula(5, 310);
+CALL sp_RegistrarMatricula(5, 1);
 
-select * from turmas where id_disciplina=310;
-select * from semestres where id_semestre=4;
+select * from turmas where id_turma=1;
 
+select * from matriculas where id_aluno=5;
+
+call sp_TrancarMatricula(51,5);
+
+select * from usuarios;
+select * from logsSistema;
 /*3. Trancar matrícula e conferir decremento de vaga
 o Trancar uma matrícula ativa e confirmar se o campo VagasOcupadas da
 turma foi decrementado corretamente.*/
@@ -86,7 +92,12 @@ restrições ou necessidade de ajustes.*/
 o Forçar uma falha dentro de sp_RegistrarMatricula (ex.: turma
 inexistente) e confirmar que nenhuma alteração parcial ficou gravada.*/
 
-SELECT t.id_turma, t.id_disciplina, s.codigo_semestre, s.aberto_matricula
+SELECT t.id_turma, t.id_disciplina, s.codigo_semestre
 FROM turmas t JOIN disciplinas d ON t.id_disciplina = d.id_disciplina
 JOIN semestres s ON t.id_semestre = s.id_semestre
 WHERE s.aberto_matricula = 'N';
+
+SELECT t.id_turma, t.id_disciplina, s.codigo_semestre
+FROM turmas t JOIN disciplinas d ON t.id_disciplina = d.id_disciplina
+JOIN semestres s ON t.id_semestre = s.id_semestre
+WHERE s.aberto_matricula = 'S';
