@@ -316,7 +316,7 @@ begin
     join curriculos           as cr on cr.id_curso      = c.id_curso
     join disciplinas_curriculo as dc on dc.id_curriculo = cr.id_curriculo
     join disciplinas          as d  on d.id_disciplina  = dc.id_disciplina
-    join view_historico_aluno as v  on v.id_disciplina  = d.id_disciplina
+    join vw_BoletimAluno as v  on v.id_disciplina  = d.id_disciplina
     where c.id_curso = p_ID_Curso
       and v.id_aluno = p_ID_Aluno
       and v.status   = 'Pendente';
