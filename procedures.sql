@@ -68,7 +68,7 @@ BEGIN
 			JOIN historicoAluno h
 			ON h.id_disciplina = pr.id_disciplina_requisito
 			AND h.id_aluno = p_ID_Aluno
-			AND UPPER(h.status) = 'APROVADO'
+			AND UPPER(h.status) = 'Aprovado'
          WHERE pr.id_disciplina_principal = v_id_disciplina;
 
         IF v_qtd_requisitos_ok < v_qtd_requisitos_total THEN
@@ -86,7 +86,7 @@ BEGIN
         ON t2.id_turma = m.id_turma
      WHERE m.id_aluno = p_ID_Aluno
        AND t2.id_disciplina = v_id_disciplina
-       AND m.status = 'CURSANDO';
+       AND m.status = 'Cursando';
 
     IF v_qtd_matriculas_mesma_disciplina > 0 THEN
         SIGNAL SQLSTATE '45000'
@@ -101,14 +101,15 @@ BEGIN
     ) VALUES (
         p_ID_Turma,
         p_ID_Aluno,
-        'CURSANDO',
+        'Cursando',
         0.0
     );
-    
+/* esse ta duplicando as vagas pq na trigger tbm foi pedido que tivesse
+um incremento de vagas, optamos por deixar nas trigger para evitar a duplicação.
     UPDATE turmas
        SET vagas_ocupadas = vagas_ocupadas + 1
      WHERE id_turma = p_ID_Turma;
-
+*/
     COMMIT;
 
     END proc_end;
@@ -134,9 +135,9 @@ BEGIN
 			set v_status = v_status;
 		else
 			if p_NotaFinal >= 7 then
-				set v_status = 'APROVADO';
+				set v_status = 'Aprovado';
             else 
-				set v_status = 'REPROVADO';
+				set v_status = 'Reprovado';
 			end if;
         update matriculas
         set nota_final =  p_NotaFinal ,
@@ -177,7 +178,7 @@ begin
 		else
 			
             update matriculas
-            set status = 'TRANCADO'
+            set status = 'Trancado'
             where id_matricula = p_ID_Matricula;
             
             select id_turma
@@ -194,9 +195,6 @@ begin
             values(usuario,"trancar_matricula","matriculas",now());
 		
         end if;
-        
-
-
 end $$
 
 DELIMITER ;
@@ -222,7 +220,7 @@ begin
         from matriculas as m
         inner join turmas as t on m.id_turma = t.id_turma
         inner join disciplinas as d on t.id_disciplina = d.id_disciplina
-        where m.status = "APROVADO"
+        where m.status = "Aprovado"
         and m.id_aluno = p_ID_Aluno;
      
      else 
@@ -375,7 +373,7 @@ begin
     inner join disciplinas as d 
             on d.id_disciplina = h.id_disciplina
     where h.id_aluno = p_id_aluno
-      and h.status   = 'aprovado';
+      and h.status   = 'Aprovado';
 
 end $$
 
