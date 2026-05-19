@@ -198,7 +198,8 @@ CREATE TRIGGER trg_AtualizarHistoricoAutomaticamente
 AFTER UPDATE ON matriculas
 FOR EACH ROW
 BEGIN
-	IF OLD.status <> NEW.status AND NEW.status = 'Aprovado' THEN
+	IF OLD.status <> NEW.status 
+    AND NEW.status IN ('Aprovado','Reprovado') THEN
 	INSERT INTO historicoAluno (id_aluno, id_disciplina, notaFinal, status, dataConclusao)
 	VALUES (NEW.id_aluno, (SELECT id_disciplina FROM turmas WHERE id_turma = NEW.id_turma), NEW.nota_final, 'Aprovado', NOW());
     END IF;
@@ -243,7 +244,7 @@ AFTER INSERT ON professores
 FOR EACH ROW
 BEGIN
 	INSERT INTO usuarios(nome,email, tipoUsuario,senhaHash)
-    VALUES(NEW.nome,NEW.email,'PROFESSOR',SHA2('123456', 256));s
+    VALUES(NEW.nome,NEW.email,'PROFESSOR',SHA2('123456', 256));
 END $
 DELIMITER ;
 

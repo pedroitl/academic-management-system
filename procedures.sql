@@ -104,11 +104,12 @@ BEGIN
         'CURSANDO',
         0.0
     );
-    
+/* esse ta duplicando as vagas pq na trigger tbm foi pedido que tivesse
+um incremento de vagas, optamos por deixar nas trigger para evitar a duplicação.
     UPDATE turmas
        SET vagas_ocupadas = vagas_ocupadas + 1
      WHERE id_turma = p_ID_Turma;
-
+*/
     COMMIT;
 
     END proc_end;
@@ -194,9 +195,6 @@ begin
             values(usuario,"trancar_matricula","matriculas",now());
 		
         end if;
-        
-
-
 end $$
 
 DELIMITER ;
