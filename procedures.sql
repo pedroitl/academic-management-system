@@ -101,7 +101,7 @@ BEGIN
     ) VALUES (
         p_ID_Turma,
         p_ID_Aluno,
-        'CURSANDO',
+        'Cursando',
         0.0
     );
 /* esse ta duplicando as vagas pq na trigger tbm foi pedido que tivesse
