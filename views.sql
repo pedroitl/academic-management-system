@@ -3,7 +3,7 @@ Exibe o histórico completo de um aluno (nome, semestre, disciplina, professor,
 nota e status).*/
 
 create view vw_BoletimAluno as 
-select a.nome,s.codigo_semestre,d.nomeDisciplina, p.nome as "nome_professor", h.notaFinal, h.status
+select h.id_aluno,h.id_disciplina,a.nome,s.codigo_semestre,d.nomeDisciplina, p.nome as "nome_professor", h.notaFinal, h.status
 from historicoaluno as h inner join alunos a on h.id_aluno = a.id_aluno
 inner join disciplinas d on h.id_disciplina = d.id_disciplina
 inner join matriculas m on h.id_aluno=m.id_aluno
