@@ -165,17 +165,13 @@ create procedure sp_TrancarMatricula(in p_ID_Matricula int , in p_ID_Usuario int
 begin
 
 	DECLARE v_quantidade_matricula INT;
-    DECLARE v_situacao varchar(20);
     DECLARE v_id_turma int;
     declare usuario varchar(250);
     
 		select count(*) into v_quantidade_matricula
         from matriculas where id_matricula = p_ID_Matricula;
         
-        if v_quantidade_matricula = 0 then
-			set v_situacao = v_situacao;
-            
-		else
+        if v_quantidade_matricula > 0 then
 			
             update matriculas
             set status = 'Trancado'
@@ -193,6 +189,8 @@ begin
             select nome into usuario from alunos where id_aluno=p_ID_Usuario;
             insert into logssistema(usuario,acao,tabelaAfetada,dataHora)
             values(usuario,"trancar_matricula","matriculas",now());
+			
+           
 		
         end if;
 end $$
@@ -220,11 +218,8 @@ begin
         from matriculas as m
         inner join turmas as t on m.id_turma = t.id_turma
         inner join disciplinas as d on t.id_disciplina = d.id_disciplina
-        where UPPER(m.status) = "APROVADO"
+        where UPPER(m.status) = "Aprovado"
         and m.id_aluno = p_ID_Aluno;
-     
-     else 
-        set v_quantidade_alunos = v_quantidade_alunos;
         
 	end if;
 
@@ -311,15 +306,15 @@ create procedure fn_ContarDisciplinasPendentes( in p_ID_Aluno int , in p_ID_Curs
 begin
 
 	select count(*)
-    into p_qtd_pendentes
+		into p_qtd_pendentes
     from cursos               as c
     join curriculos           as cr on cr.id_curso      = c.id_curso
     join disciplinas_curriculo as dc on dc.id_curriculo = cr.id_curriculo
     join disciplinas          as d  on d.id_disciplina  = dc.id_disciplina
-    join vw_BoletimAluno as v  on v.id_disciplina  = d.id_disciplina
+	
+    left join vw_BoletimAluno as v  on v.id_disciplina = d.id_disciplina and v.id_aluno = p_ID_Aluno
     where c.id_curso = p_ID_Curso
-      and v.id_aluno = p_ID_Aluno
-      and v.status   = 'Pendente';
+      and v.id_aluno is null;
 	
 
 end $$
