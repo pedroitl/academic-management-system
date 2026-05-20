@@ -199,7 +199,7 @@ begin
         from matriculas as m
         inner join turmas as t on m.id_turma = t.id_turma
         inner join disciplinas as d on t.id_disciplina = d.id_disciplina
-        where UPPER(m.status) = "Aprovado"
+        where m.status = "Aprovado"
         and m.id_aluno = p_ID_Aluno;        
 	end if;
 end $$
