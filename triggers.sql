@@ -258,6 +258,7 @@ BEGIN
 END $
 DELIMITER ;
 
+
 DELIMITER $
 
 CREATE TRIGGER trg_historico_insert
@@ -266,31 +267,10 @@ FOR EACH ROW
 BEGIN
     DECLARE disciplina_turma INT;
 
-    IF NEW.status IN ('Aprovado', 'Reprovado') THEN
+    IF NEW.status IN ('Aprovado') THEN
         SELECT id_disciplina INTO disciplina_turma FROM turmas WHERE id_turma = NEW.id_turma;
         INSERT INTO historicoAluno(id_aluno,id_disciplina,notaFinal,status,dataConclusao)
         VALUES(NEW.id_aluno, disciplina_turma,NEW.nota_final,NEW.status,CURDATE());
     END IF;
 END$
-DELIMITER ;
-
-DELIMITER $
-/*Incremento para automatizar a inserção de dados na tabela historicoAluno 
----->by leh*/
-CREATE TRIGGER trg_historico_aluno
-AFTER UPDATE ON matriculas
-FOR EACH ROW
-BEGIN
-    DECLARE disciplina_turma INT;
-
-    IF NEW.status IN ('Aprovado', 'Reprovado')
-       AND OLD.status <> NEW.status THEN
-
-        SELECT id_disciplina INTO disciplina_turma FROM turmas WHERE id_turma = NEW.id_turma;
-        INSERT INTO historicoAluno(id_aluno, id_disciplina, notaFinal, status, dataConclusao)
-        VALUES(NEW.id_aluno, disciplina_turma, NEW.nota_final, NEW.status, CURDATE());
-
-    END IF;
-END$
-
 DELIMITER ;

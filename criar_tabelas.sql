@@ -25,7 +25,7 @@ create table alunos(
    dataNascimento date not null,
    id_curso integer,
    primary key (id_aluno),
-   foreign key (id_curso) references cursos(id_curso)
+   foreign key (id_curso) references cursos(id_curso) ON DELETE RESTRICT
 );
 create table curriculos(
 	id_curriculo smallint auto_increment,
@@ -33,7 +33,7 @@ create table curriculos(
     anoInicio smallint,
     versao smallint,
     primary key(id_curriculo),
-    foreign key (id_curso) references cursos(id_curso)
+    foreign key (id_curso) references cursos(id_curso) ON DELETE RESTRICT
 );
 create table disciplinas(
 	id_disciplina smallint auto_increment,
@@ -45,16 +45,16 @@ create table disciplinas_curriculo(
 	id_disciplina smallint,
     id_curriculo smallint,
     periodoIdeal smallint,
-    foreign key (id_disciplina) references disciplinas(id_disciplina),
-    foreign key (id_curriculo) references curriculos(id_curriculo),
+    foreign key (id_disciplina) references disciplinas(id_disciplina)ON DELETE cascade,
+    foreign key (id_curriculo) references curriculos(id_curriculo) ON DELETE cascade,
     primary key(id_disciplina, id_curriculo)
 );
 create table pre_requisitos(
 	id_disciplina_principal smallint ,
 	id_disciplina_requisito smallint,
 	primary key(id_disciplina_requisito, id_disciplina_principal),
-    foreign key (id_disciplina_principal) references disciplinas(id_disciplina),
-    foreign key (id_disciplina_requisito) references disciplinas(id_disciplina)
+    foreign key (id_disciplina_principal) references disciplinas(id_disciplina)on delete cascade,
+    foreign key (id_disciplina_requisito) references disciplinas(id_disciplina) on delete cascade
 );
 create table semestres(
 	id_semestre smallint auto_increment,
@@ -71,9 +71,9 @@ create table turmas(
     max_vagas smallint,
     vagas_ocupadas smallint default 0,
     primary key(id_turma),
-    foreign key(id_disciplina) references disciplinas(id_disciplina),
-    foreign key (id_semestre) references semestres(id_semestre),
-    foreign key (id_professor) references professores(id_professor)
+    foreign key(id_disciplina) references disciplinas(id_disciplina) ON DELETE RESTRICT,
+    foreign key (id_semestre) references semestres(id_semestre) ON DELETE RESTRICT, 
+    foreign key (id_professor) references professores(id_professor) ON DELETE RESTRICT
 );
 
 create table matriculas(
@@ -83,20 +83,21 @@ create table matriculas(
     status char(10),
     nota_final decimal(4,2),
     primary key (id_matricula),
-    foreign key(id_aluno) references alunos(id_aluno),
-    foreign key(id_turma) references turmas(id_turma)
+    foreign key(id_aluno) references alunos(id_aluno) ON DELETE RESTRICT,
+    foreign key(id_turma) references turmas(id_turma) ON DELETE RESTRICT,
+    check (status in ('CURSANDO','APROVADO','REPROVADO','TRANCADO'))
 );
 
 create table historicoAluno(
-	id_historico smallint auto_increment,
+	id_historico integer auto_increment,
     id_aluno integer,
     id_disciplina smallint,
     notaFinal decimal(4,2),
     status char(10),
     dataConclusao date,
     primary key (id_historico),
-    foreign key(id_aluno) references alunos(id_aluno),
-    foreign key(id_disciplina) references disciplinas(id_disciplina)
+    foreign key(id_aluno) references alunos(id_aluno) ON DELETE RESTRICT,
+    foreign key(id_disciplina) references disciplinas(id_disciplina) ON DELETE RESTRICT
 );
 
 create table usuarios(
