@@ -80,19 +80,6 @@ CALL sp_GerarHistoricoAluno(1);
 
 SELECT * FROM historicoAluno h  WHERE h.id_aluno = 1;
 
-SELECT
-	h.id_historico,
-	a.nome,
-	d.nomeDisciplina,
-	h.status,
-	h.notaFinal
-FROM historicoAluno h
-JOIN alunos a
-	ON h.id_aluno = a.id_aluno
-JOIN disciplinas d
-	ON h.id_disciplina = d.id_disciplina
-WHERE h.id_aluno = 1;
-
 /*6. Consultar vw_DesempenhoTurma e validar médias
 o Confirmar cálculo da média de notas, aprovados e reprovados por turma.*/
 
