@@ -95,7 +95,20 @@ com sucesso.
 o fn_TotalHorasConcluidas → validar soma da carga horária das
 disciplinas aprovadas.*/
 
-SELECT 
+/*confirmar número correto de disciplinas restantes.*/
+CALL fn_CalcularCoeficienteRendimento(2,@coeficiente);
+SELECT @coeficiente;
+
+/*verificar o coeficiente de desempenho de um aluno.*/
+CALL fn_ContarDisciplinasPendentes(2,1,@disciplinas_pendentes);
+SELECT @disciplinas_pendentes;
+
+/*retornar disciplinas concluídas com sucesso.*/
+CALL fn_ListarDisciplinasAprovadas(2);
+
+/*validar soma da carga horária das disciplinas aprovadas.*/
+CALL fn_TotalHorasConcluidas(2,@horasTotais);
+SELECT @horasTotais; 
 
 /*8. Verificar logs de operações
 o Após executar INSERT, UPDATE e DELETE em tabelas principais,
@@ -109,6 +122,9 @@ bloquear a matrícula e registrar tentativa em LogsSistema.*/
 /*10. Reabrir período de matrícula
 o Executar sp_ReabrirPeriodoMatricula e verificar se
 AbertoParaMatricula do semestre foi alterado para TRUE.*/
+
+CALL sp_ReabrirPeriodoMatricula(3);
+SELECT id_semestre, aberto_matricula FROM semestres WHERE id_semestre = 3;
 
 /*11. Verificar integridade entre histórico e matrículas
 o Após lançamentos de notas, confirmar que disciplinas aprovadas no
