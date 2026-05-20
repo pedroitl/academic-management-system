@@ -10,7 +10,6 @@ o Regras:
 >>> Inserir a matrícula com status 'Cursando' e confirmar transação.*/
 
 DELIMITER $$
-
 CREATE PROCEDURE sp_RegistrarMatricula (
     IN p_ID_Aluno INT,
     IN p_ID_Turma INT
@@ -24,9 +23,9 @@ BEGIN
     DECLARE v_qtd_requisitos_total INT;
     DECLARE v_qtd_requisitos_ok INT;
     DECLARE v_qtd_matriculas_mesma_disciplina INT;
-
+    
     proc_end: BEGIN
-
+    
     START TRANSACTION;
 
     SELECT t.id_semestre,
@@ -111,10 +110,8 @@ um incremento de vagas, optamos por deixar nas trigger para evitar a duplicaçã
      WHERE id_turma = p_ID_Turma;
 */
     COMMIT;
-
     END proc_end;
 END $$
-
 DELIMITER ;
 
 
@@ -143,10 +140,8 @@ BEGIN
         set nota_final =  p_NotaFinal ,
 			status = v_status
 		where id_matricula = p_ID_Matricula;
-        
         end if;
 END $$
-
 DELIMITER ;
 
 
@@ -155,12 +150,8 @@ DELIMITER ;
 >> o Altera status para 'Trancado', decrementa vaga e registra log.*/
 
 DELIMITER $$
-
 create procedure sp_TrancarMatricula(in p_ID_Matricula int , in p_ID_Usuario int )
-
-
 begin
-
 	DECLARE v_quantidade_matricula INT;
     DECLARE v_id_turma int;
     declare usuario varchar(250);
@@ -169,7 +160,6 @@ begin
         from matriculas where id_matricula = p_ID_Matricula;
         
         if v_quantidade_matricula > 0 then
-			
             update matriculas
             set status = 'Trancado'
             where id_matricula = p_ID_Matricula;
@@ -186,9 +176,6 @@ begin
             select nome into usuario from alunos where id_aluno=p_ID_Usuario;
             insert into logssistema(usuario,acao,tabelaAfetada,dataHora)
             values(usuario,"trancar_matricula","matriculas",now());
-			
-           
-		
         end if;
 end $$
 
@@ -199,11 +186,8 @@ DELIMITER ;
 >> o Inserir no histórico todas as disciplinas aprovadas do aluno.*/
 
 DELIMITER $$
-
 create procedure sp_GerarHistoricoAluno(in p_ID_Aluno int)
-
 begin
-	
     DECLARE v_quantidade_alunos int;
     
     select count(*) into v_quantidade_alunos
@@ -216,21 +200,16 @@ begin
         inner join turmas as t on m.id_turma = t.id_turma
         inner join disciplinas as d on t.id_disciplina = d.id_disciplina
         where UPPER(m.status) = "Aprovado"
-        and m.id_aluno = p_ID_Aluno;
-        
+        and m.id_aluno = p_ID_Aluno;        
 	end if;
-
 end $$
-
 DELIMITER ;
 
 /*sp_ReabrirPeriodoMatricula
 >> o Reabre um semestre, definindo AbertoParaMatricula = TRUE.*/
 
 DELIMITER $$
-
 create procedure sp_ReabrirPeriodoMatricula(in v_id_semestre int)
-
 begin
 	declare v_quantidade int;
     
@@ -240,37 +219,25 @@ begin
 	where id_semestre = v_id_semestre
 	and UPPER(aberto_matricula) = "N";
 
-
 	if  v_quantidade > 0 then
 		update semestres
 		set aberto_matricula = "S"
 		where id_semestre = v_id_semestre;
-		
 	end if;
-
 end $$
-
 DELIMITER ;
 
 
-
-
-
 /*Procedimentos de Retorno (OUT)
-
 fn_CalcularCoeficienteRendimento(p_ID_Aluno)
 Retorna a média das notas ponderada das disciplinas concluídas.*/
 
 DELIMITER $$
-
 create procedure fn_CalcularCoeficienteRendimento(in p_ID_Aluno int, out p_coeficiente decimal(10,2))
-
 begin
-	
     DECLARE v_numerador decimal(10,2);
     DECLARE v_denominador decimal(10,2);
     
-	
     select sum(m.nota_final * d.cargaHoraria) ,sum(d.cargaHoraria) into v_numerador , v_denominador
 	from matriculas as m
 	inner join turmas as t on m.id_turma = t.id_turma
@@ -280,11 +247,8 @@ begin
         
 	if v_denominador > 0 then
 		set p_coeficiente = v_numerador / v_denominador;
-        
 	end if;
-
 end $$
-
 DELIMITER ;
 
 set @coef := 0;
@@ -297,11 +261,8 @@ select @coef;
 Retorna quantas disciplinas do currículo o aluno ainda não cursou.*/
 
 DELIMITER $$
-
 create procedure fn_ContarDisciplinasPendentes( in p_ID_Aluno int , in p_ID_Curso int, out p_qtd_pendentes int)
-
 begin
-
 	select count(*)
 		into p_qtd_pendentes
     from cursos               as c
@@ -312,11 +273,7 @@ begin
     left join vw_BoletimAluno as v  on v.id_disciplina = d.id_disciplina and v.id_aluno = p_ID_Aluno
     where c.id_curso = p_ID_Curso
       and v.id_aluno is null;
-	
-
 end $$
-
-
 DELIMITER ;
 
 
@@ -325,22 +282,15 @@ Retorna as disciplinas em que o aluno foi aprovado.*/
 
 
 DELIMITER $$ 
-
 create procedure fn_ListarDisciplinasAprovadas( in p_ID_Aluno int)
-
-
 begin
-	
     select distinct a.id_aluno, a.nome as "nome_aluno", ha.status,d.nomeDisciplina
 	from historicoaluno as ha
 	inner join disciplinas as d on ha.id_disciplina = d.id_disciplina
 	inner join alunos as a on ha.id_aluno = a.id_aluno
 	where ha.status = "Aprovado"
     and a.id_aluno = p_ID_Aluno;
-	
-
 end $$
-
 DELIMITER ;
 
 CALL fn_ListarDisciplinasAprovadas(4);
@@ -350,13 +300,11 @@ CALL fn_ListarDisciplinasAprovadas(4);
 Retorna a soma da carga horária das disciplinas já concluídas*/
 
 DELIMITER $$
-
 create procedure fn_totalhorasconcluidas(
     in  p_id_aluno int,
     out p_total_horas int
 )
 begin
-
     select
         sum(d.cargahoraria)
     into p_total_horas
@@ -366,9 +314,7 @@ begin
             on d.id_disciplina = h.id_disciplina
     where h.id_aluno = p_id_aluno
       and h.status   = 'Aprovado';
-
 end $$
-
 DELIMITER ;
 
 set @horas := 0;
