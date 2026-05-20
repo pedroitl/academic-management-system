@@ -124,15 +124,15 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE PROCEDURE sp_LancarNotas(IN p_ID_Matricula int, IN p_NotaFinal decimal(10,0))
-
+CREATE PROCEDURE sp_LancarNotas(IN p_ID_Matricula int, IN p_NotaFinal decimal(4,2))
 BEGIN
 	DECLARE v_quantidade_matricula INT;
     DECLARE v_status varchar(20);
 		select count(*) into v_quantidade_matricula
         from matriculas where id_matricula = p_ID_Matricula;
         if v_quantidade_matricula = 0 then
-			set v_status = v_status;
+			signal  sqlstate '45000'
+			set message_text = 'Nao ha matricula cadastrada com esse ID';
 		else
 			if p_NotaFinal >= 7 then
 				set v_status = 'Aprovado';
@@ -145,9 +145,6 @@ BEGIN
 		where id_matricula = p_ID_Matricula;
         
         end if;
-    
-	
-
 END $$
 
 DELIMITER ;

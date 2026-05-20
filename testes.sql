@@ -68,6 +68,10 @@ call sp_TrancarMatricula(4,4);
 o Inserir notas e verificar se o status muda automaticamente para
 'Aprovado' ou 'Reprovado'.*/
 
+CALL sp_LancarNotas(5,6.2);
+
+SELECT * FROM matriculas WHERE id_matricula = 5;
+
 /*5. Gerar histórico de aluno e verificar consistência
 o Executar sp_GerarHistoricoAluno e confirmar se apenas disciplinas
 aprovadas foram registradas.*/
@@ -84,6 +88,8 @@ o fn_ListarDisciplinasAprovadas → retornar disciplinas concluídas
 com sucesso.
 o fn_TotalHorasConcluidas → validar soma da carga horária das
 disciplinas aprovadas.*/
+
+SELECT 
 
 /*8. Verificar logs de operações
 o Após executar INSERT, UPDATE e DELETE em tabelas principais,
