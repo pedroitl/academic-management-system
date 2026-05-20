@@ -1,5 +1,5 @@
 USE academico;
-select * from disciplinas;
+
 INSERT INTO cursos(nome, coordenador, cargaHorariaTotal) VALUES 
 ('Sistemas de Informação', 'Ana Silva', 3000),
 ('Ciência da Computação', 'Lucas Alves', 3200),

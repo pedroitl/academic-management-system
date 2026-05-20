@@ -5,13 +5,60 @@ o Testar matrícula em disciplina que exige pré-requisito ainda não cursado
 o Testar matrícula em disciplina sem pré-requisitos (deve ser concluída
 com sucesso).*/
 
+	/*Verificar se disciplina x que possue pre-requisitos e qual turmas tem disponiveis e o semstre está aberto*/
+	SELECT t.id_turma, d1.id_disciplina AS disciplina,d2.id_disciplina AS pre_requisito, t.vagas_ocupadas
+	FROM pre_requisitos p JOIN disciplinas d1 ON p.id_disciplina_principal = d1.id_disciplina
+	JOIN disciplinas d2 ON p.id_disciplina_requisito = d2.id_disciplina
+	JOIN turmas t ON t.id_disciplina = d1.id_disciplina 
+    JOIN semestres s ON s.id_semestre=t.id_semestre where d1.id_disciplina=13  and UPPER(s.aberto_matricula)="S";
+
+	/*Verificar se uma disciplina x está vinculada a um aluno y*/
+
+	SELECT a.id_aluno, t.id_turma,  d.id_disciplina, m.status
+	FROM matriculas m JOIN alunos a ON m.id_aluno = a.id_aluno
+	JOIN turmas t ON m.id_turma = t.id_turma
+	JOIN disciplinas d ON t.id_disciplina = d.id_disciplina
+	WHERE a.id_aluno = 1 and t.id_disciplina=13;
+    
+/*FALHA*/
+CALL sp_RegistrarMatricula(1, 51);
+
+/*SUCESSO*/
+CALL sp_RegistrarMatricula(1, 13);
+
 /*2. Simular falta de vaga e verificar rollback
 o Tentar matricular um aluno quando a turma já está cheia (esperar
 ROLLBACK e mensagem de erro).*/
 
+		/*Verifica alunos que não estão matriculados em uma turma*/
+		SELECT a.id_aluno FROM alunos a
+		WHERE NOT EXISTS ( SELECT 1 FROM matriculas m JOIN turmas t ON m.id_turma = t.id_turma
+			WHERE m.id_aluno = a.id_aluno AND t.id_turma = 90) order by a.id_aluno;
+			
+		/*Verifica turmas que estão com as vagas preenchidas*/
+		SELECT t.id_turma, t.id_disciplina, t.max_vagas, t.vagas_ocupadas, s.codigo_semestre
+		FROM turmas t JOIN disciplinas d ON t.id_disciplina = d.id_disciplina
+		JOIN semestres s ON t.id_semestre = s.id_semestre
+		WHERE t.vagas_ocupadas >= t.max_vagas;
+        
+        /*Verificar as turmas que um aluno y faz parte*/
+        SELECT a.id_aluno, t.id_turma,  d.id_disciplina, m.status
+		FROM matriculas m JOIN alunos a ON m.id_aluno = a.id_aluno
+		JOIN turmas t ON m.id_turma = t.id_turma
+		JOIN disciplinas d ON t.id_disciplina = d.id_disciplina
+		WHERE a.id_aluno = 1;	
+
+/*FALHA*/
+select * from turmas where id_turma=90;
+
+update turmas set id_semestre=11 where id_turma=90;
+CALL sp_RegistrarMatricula(1, 90);
+
+
 /*3. Trancar matrícula e conferir decremento de vaga
 o Trancar uma matrícula ativa e confirmar se o campo VagasOcupadas da
 turma foi decrementado corretamente.*/
+call sp_TrancarMatricula(51,5);
 
 /*4. Lançar notas e confirmar alteração automática de status
 o Inserir notas e verificar se o status muda automaticamente para
@@ -58,3 +105,15 @@ restrições ou necessidade de ajustes.*/
 /*13. Simular erro proposital para validar rollback
 o Forçar uma falha dentro de sp_RegistrarMatricula (ex.: turma
 inexistente) e confirmar que nenhuma alteração parcial ficou gravada.*/
+
+SELECT t.id_turma, t.id_disciplina, s.codigo_semestre
+FROM turmas t JOIN disciplinas d ON t.id_disciplina = d.id_disciplina
+JOIN semestres s ON t.id_semestre = s.id_semestre
+WHERE s.aberto_matricula = 'N';
+
+SELECT t.id_turma, t.id_disciplina, s.codigo_semestre
+FROM turmas t JOIN disciplinas d ON t.id_disciplina = d.id_disciplina
+JOIN semestres s ON t.id_semestre = s.id_semestre
+WHERE s.aberto_matricula = 'S';
+
+select * from semestres where codigo_semestre=20251;

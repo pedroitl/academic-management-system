@@ -86,7 +86,7 @@ BEGIN
         ON t2.id_turma = m.id_turma
      WHERE m.id_aluno = p_ID_Aluno
        AND t2.id_disciplina = v_id_disciplina
-       AND m.status = 'CURSANDO';
+       AND UPPER(m.status) = 'CURSANDO';
 
     IF v_qtd_matriculas_mesma_disciplina > 0 THEN
         SIGNAL SQLSTATE '45000'
@@ -101,14 +101,15 @@ BEGIN
     ) VALUES (
         p_ID_Turma,
         p_ID_Aluno,
-        'CURSANDO',
+        'Cursando',
         0.0
     );
-    
+/* esse ta duplicando as vagas pq na trigger tbm foi pedido que tivesse
+um incremento de vagas, optamos por deixar nas trigger para evitar a duplicação.
     UPDATE turmas
        SET vagas_ocupadas = vagas_ocupadas + 1
      WHERE id_turma = p_ID_Turma;
-
+*/
     COMMIT;
 
     END proc_end;
@@ -134,53 +135,10 @@ BEGIN
 			set v_status = v_status;
 		else
 			if p_NotaFinal >= 7 then
-				set v_status = 'APROVADO';
+				set v_status = 'Aprovado';
             else 
-				set v_status = 'REPROVADO';
+				set v_status = 'Reprovado';
 			end if;
-        update matriculas
-        set nota_final =  p_NotaFinal ,
-			status = v_status
-		where id_matricula = p_ID_Matricula;
-        
-        end if;
-    
-	
-
-END $$
-
-DELIMITER ;
-
-
-/*sp_LancarNotas
->> o Parâmetros: p_ID_Matricula, p_NotaFinal
->> o Atualiza nota e define status: 'Aprovado' se nota ≥ 7, senão 'Reprovado'.*/
-
-DELIMITER $$
-
-CREATE PROCEDURE sp_LancarNotas(IN p_ID_Matricula int, IN p_NotaFinal decimal(10,0))
-
-BEGIN
-	DECLARE v_quantidade_matricula INT;
-    DECLARE v_status varchar(20);
-    
-		select count(*) into v_quantidade_matricula
-        from matriculas where id_matricula = p_ID_Matricula;
-        
-        if v_quantidade_matricula = 0 then
-			set v_status = v_status;
-            
-		else
-        
-			if p_NotaFinal >= 7 then
-				set v_status = 'APROVADO';
-			
-            else 
-				set v_status = 'REPROVADO';
-                
-			end if;
-            
-		
         update matriculas
         set nota_final =  p_NotaFinal ,
 			status = v_status
@@ -209,6 +167,7 @@ begin
 	DECLARE v_quantidade_matricula INT;
     DECLARE v_situacao varchar(20);
     DECLARE v_id_turma int;
+    declare usuario varchar(250);
     
 		select count(*) into v_quantidade_matricula
         from matriculas where id_matricula = p_ID_Matricula;
@@ -219,7 +178,7 @@ begin
 		else
 			
             update matriculas
-            set status = 'TRANCADO'
+            set status = 'Trancado'
             where id_matricula = p_ID_Matricula;
             
             select id_turma
@@ -231,13 +190,11 @@ begin
             set vagas_ocupadas = vagas_ocupadas - 1
             where id_turma = v_id_turma;
             
-            insert into logssistema(id_usuario,acao,tabelaAfetada,dataHora)
-            values(p_ID_Usuario,"trancar_matricula","matriculas",now());
+            select nome into usuario from alunos where id_aluno=p_ID_Usuario;
+            insert into logssistema(usuario,acao,tabelaAfetada,dataHora)
+            values(usuario,"trancar_matricula","matriculas",now());
 		
         end if;
-        
-
-
 end $$
 
 DELIMITER ;
@@ -263,7 +220,7 @@ begin
         from matriculas as m
         inner join turmas as t on m.id_turma = t.id_turma
         inner join disciplinas as d on t.id_disciplina = d.id_disciplina
-        where m.status = "APROVADO"
+        where UPPER(m.status) = "APROVADO"
         and m.id_aluno = p_ID_Aluno;
      
      else 
@@ -289,7 +246,7 @@ begin
 	into v_quantidade
 	from semestres
 	where id_semestre = v_id_semestre
-	and aberto_matricula = "N";
+	and UPPER(aberto_matricula) = "N";
 
 
 	if  v_quantidade > 0 then
@@ -326,7 +283,7 @@ begin
 	from matriculas as m
 	inner join turmas as t on m.id_turma = t.id_turma
 	inner join disciplinas as d on t.id_disciplina = d.id_disciplina
-	where m.status = "Aprovado" and
+	where UPPER(m.status) = "APROVADO" and
 		m.id_aluno = p_ID_Aluno;
         
 	if v_denominador > 0 then
@@ -359,7 +316,7 @@ begin
     join curriculos           as cr on cr.id_curso      = c.id_curso
     join disciplinas_curriculo as dc on dc.id_curriculo = cr.id_curriculo
     join disciplinas          as d  on d.id_disciplina  = dc.id_disciplina
-    join view_historico_aluno as v  on v.id_disciplina  = d.id_disciplina
+    join vw_BoletimAluno as v  on v.id_disciplina  = d.id_disciplina
     where c.id_curso = p_ID_Curso
       and v.id_aluno = p_ID_Aluno
       and v.status   = 'Pendente';
@@ -416,7 +373,7 @@ begin
     inner join disciplinas as d 
             on d.id_disciplina = h.id_disciplina
     where h.id_aluno = p_id_aluno
-      and h.status   = 'aprovado';
+      and h.status   = 'Aprovado';
 
 end $$
 
