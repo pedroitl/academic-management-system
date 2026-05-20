@@ -242,7 +242,7 @@ begin
 	from matriculas as m
 	inner join turmas as t on m.id_turma = t.id_turma
 	inner join disciplinas as d on t.id_disciplina = d.id_disciplina
-	where UPPER(m.status) = "APROVADO" and
+	where m.status = "Aprovado" and
 		m.id_aluno = p_ID_Aluno;
         
 	if v_denominador > 0 then
@@ -276,10 +276,8 @@ begin
 end $$
 DELIMITER ;
 
-
 /*fn_ListarDisciplinasAprovadas(p_ID_Aluno)
 Retorna as disciplinas em que o aluno foi aprovado.*/
-
 
 DELIMITER $$ 
 create procedure fn_ListarDisciplinasAprovadas( in p_ID_Aluno int)

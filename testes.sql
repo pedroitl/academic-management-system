@@ -59,7 +59,7 @@ CALL sp_RegistrarMatricula(1, 90);
 o Trancar uma matrícula ativa e confirmar se o campo VagasOcupadas da
 turma foi decrementado corretamente.*/
 
-select * from matriculas where UPPER(status)="CURSANDO";
+select * from matriculas where status ="Cursando";
 select * from turmas where id_turma=20;
 
 call sp_TrancarMatricula(4,4);
@@ -82,6 +82,8 @@ SELECT * FROM historicoAluno h  WHERE h.id_aluno = 1;
 
 /*6. Consultar vw_DesempenhoTurma e validar médias
 o Confirmar cálculo da média de notas, aprovados e reprovados por turma.*/
+
+SELECT * FROM vw_DesempenhoTurma;
 
 /*7. Executar funções de retorno (OUT)
 o fn_CalcularCoeficienteRendimento → verificar o coeficiente de
