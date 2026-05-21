@@ -5,64 +5,34 @@ o Testar matrícula em disciplina que exige pré-requisito ainda não cursado
 o Testar matrícula em disciplina sem pré-requisitos (deve ser concluída
 com sucesso).*/
 
-	/*Verificar se disciplina x que possue pre-requisitos e qual turmas tem disponiveis e o semstre está aberto*/
-	SELECT t.id_turma, d1.id_disciplina AS disciplina,d2.id_disciplina AS pre_requisito, t.vagas_ocupadas
-	FROM pre_requisitos p JOIN disciplinas d1 ON p.id_disciplina_principal = d1.id_disciplina
-	JOIN disciplinas d2 ON p.id_disciplina_requisito = d2.id_disciplina
-	JOIN turmas t ON t.id_disciplina = d1.id_disciplina 
-    JOIN semestres s ON s.id_semestre=t.id_semestre where d1.id_disciplina=13  and UPPER(s.aberto_matricula)="S";
-
-	/*Verificar se uma disciplina x está vinculada a um aluno y*/
-
-	SELECT a.id_aluno, t.id_turma,  d.id_disciplina, m.status
-	FROM matriculas m JOIN alunos a ON m.id_aluno = a.id_aluno
-	JOIN turmas t ON m.id_turma = t.id_turma
-	JOIN disciplinas d ON t.id_disciplina = d.id_disciplina
-	WHERE a.id_aluno = 1 and t.id_disciplina=13;
     
 /*FALHA*/
-CALL sp_RegistrarMatricula(1, 51);
+select * from turmas where id_turma=92;
+CALL sp_RegistrarMatricula(5, 92);
 
 /*SUCESSO*/
-CALL sp_RegistrarMatricula(1, 13);
+
+select * from turmas where id_turma=109;
+CALL sp_RegistrarMatricula(1, 109);
+
 
 /*2. Simular falta de vaga e verificar rollback
 o Tentar matricular um aluno quando a turma já está cheia (esperar
 ROLLBACK e mensagem de erro).*/
 
-		/*Verifica alunos que não estão matriculados em uma turma*/
-		SELECT a.id_aluno FROM alunos a
-		WHERE NOT EXISTS ( SELECT 1 FROM matriculas m JOIN turmas t ON m.id_turma = t.id_turma
-			WHERE m.id_aluno = a.id_aluno AND t.id_turma = 90) order by a.id_aluno;
-			
-		/*Verifica turmas que estão com as vagas preenchidas*/
-		SELECT t.id_turma, t.id_disciplina, t.max_vagas, t.vagas_ocupadas, s.codigo_semestre
-		FROM turmas t JOIN disciplinas d ON t.id_disciplina = d.id_disciplina
-		JOIN semestres s ON t.id_semestre = s.id_semestre
-		WHERE t.vagas_ocupadas >= t.max_vagas;
-        
-        /*Verificar as turmas que um aluno y faz parte*/
-        SELECT a.id_aluno, t.id_turma,  d.id_disciplina, m.status
-		FROM matriculas m JOIN alunos a ON m.id_aluno = a.id_aluno
-		JOIN turmas t ON m.id_turma = t.id_turma
-		JOIN disciplinas d ON t.id_disciplina = d.id_disciplina
-		WHERE a.id_aluno = 1;	
-
 /*FALHA*/
-select * from turmas where id_turma=90;
-
-update turmas set id_semestre=11 where id_turma=90;
-CALL sp_RegistrarMatricula(1, 90);
+select * from turmas where id_turma=31;
+CALL sp_RegistrarMatricula(47, 31);
 
 
 /*3. Trancar matrícula e conferir decremento de vaga
 o Trancar uma matrícula ativa e confirmar se o campo VagasOcupadas da
 turma foi decrementado corretamente.*/
 
-select * from matriculas where status ="Cursando";
-select * from turmas where id_turma=20;
+select * from matriculas where status ="Cursando" and id_aluno=28;
+select * from turmas where id_turma=78;
 
-call sp_TrancarMatricula(4,4);
+call sp_TrancarMatricula(67,28);
 
 /*4. Lançar notas e confirmar alteração automática de status
 o Inserir notas e verificar se o status muda automaticamente para
@@ -84,40 +54,56 @@ SELECT * FROM historicoAluno h  WHERE h.id_aluno = 1;
 o Confirmar cálculo da média de notas, aprovados e reprovados por turma.*/
 
 SELECT * FROM vw_DesempenhoTurma;
+select * from matriculas where id_turma=1;
 
 /*7. Executar funções de retorno (OUT)
 o fn_CalcularCoeficienteRendimento → verificar o coeficiente de
-desempenho de um aluno.
-o fn_ContarDisciplinasPendentes → confirmar número correto de
-disciplinas restantes.
-o fn_ListarDisciplinasAprovadas → retornar disciplinas concluídas
-com sucesso.
-o fn_TotalHorasConcluidas → validar soma da carga horária das
-disciplinas aprovadas.*/
+desempenho de um aluno.*/
 
-/*confirmar número correto de disciplinas restantes.*/
+select round(avg(nota_final),2) as coeficiente from matriculas where id_aluno=2 and upper(status)="APROVADO";
+
 CALL fn_CalcularCoeficienteRendimento(2,@coeficiente);
 SELECT @coeficiente;
 
-/*verificar o coeficiente de desempenho de um aluno.*/
+/*o fn_ContarDisciplinasPendentes → confirmar número correto de
+disciplinas restantes.*/
+
+
 CALL fn_ContarDisciplinasPendentes(2,1,@disciplinas_pendentes);
 SELECT @disciplinas_pendentes;
 
-/*retornar disciplinas concluídas com sucesso.*/
+/*o fn_ListarDisciplinasAprovadas → retornar disciplinas concluídas
+com sucesso.*/
+
 CALL fn_ListarDisciplinasAprovadas(2);
 
-/*validar soma da carga horária das disciplinas aprovadas.*/
+/*o fn_TotalHorasConcluidas → validar soma da carga horária das
+disciplinas aprovadas.*/
+select m.*, d.cargaHoraria from matriculas m join turmas t on t.id_turma=m.id_aluno 
+join disciplinas d on d.id_disciplina=t.id_disciplina where id_aluno=2 and m.status="Aprovado";
+
 CALL fn_TotalHorasConcluidas(2,@horasTotais);
 SELECT @horasTotais; 
 
 /*8. Verificar logs de operações
 o Após executar INSERT, UPDATE e DELETE em tabelas principais,
 consultar vw_LogAuditoria e confirmar se os registros foram criados.*/
-
+update alunos set email="teste@gmail.com" where id_aluno=7;
+delete from alunos where id_aluno=50;
+select * from vw_LogAuditoria;
 /*9. Testar limite de disciplinas cursando (Trigger
 trg_AtualizarStatusAutomaticamente)
 o Tentar matricular aluno já com 6 disciplinas cursando — o sistema deve
 bloquear a matrícula e registrar tentativa em LogsSistema.*/
+
+/*Executar antes de validar*/
+CALL sp_RegistrarMatricula(1, 111);
+CALL sp_RegistrarMatricula(1, 110);
+CALL sp_RegistrarMatricula(1, 92);
+
+select count(*) as esta_cursando_em from matriculas where id_aluno=1 and upper(status)="CURSANDO";
+
+CALL sp_RegistrarMatricula(1, 93);
 
 /*10. Reabrir período de matrícula
 o Executar sp_ReabrirPeriodoMatricula e verificar se
@@ -130,6 +116,8 @@ SELECT id_semestre, aberto_matricula FROM semestres WHERE id_semestre = 3;
 o Após lançamentos de notas, confirmar que disciplinas aprovadas no
 histórico correspondem às matrículas concluídas.*/
 
+
+
 /*12. Testar exclusão e atualização em cascata (se aplicável)
 o Excluir um curso e observar comportamento das FKs; verificar se há
 restrições ou necessidade de ajustes.*/
@@ -137,15 +125,5 @@ restrições ou necessidade de ajustes.*/
 /*13. Simular erro proposital para validar rollback
 o Forçar uma falha dentro de sp_RegistrarMatricula (ex.: turma
 inexistente) e confirmar que nenhuma alteração parcial ficou gravada.*/
-
-SELECT t.id_turma, t.id_disciplina, s.codigo_semestre
-FROM turmas t JOIN disciplinas d ON t.id_disciplina = d.id_disciplina
-JOIN semestres s ON t.id_semestre = s.id_semestre
-WHERE s.aberto_matricula = 'N';
-
-SELECT t.id_turma, t.id_disciplina, s.codigo_semestre
-FROM turmas t JOIN disciplinas d ON t.id_disciplina = d.id_disciplina
-JOIN semestres s ON t.id_semestre = s.id_semestre
-WHERE s.aberto_matricula = 'S';
 
 select * from semestres where codigo_semestre=20251;
