@@ -63,11 +63,12 @@ BEGIN
 		
         SELECT COUNT(*)
 			INTO v_qtd_requisitos_ok
-			FROM pre_requisitos pr
-			JOIN historicoAluno h
-			ON h.id_disciplina = pr.id_disciplina_requisito
-			AND h.id_aluno = p_ID_Aluno
-			AND UPPER(h.status) = 'APROVADO'
+			FROM turmas t 
+            join matriculas m on t.id_turma=m.id_turma
+            join disciplinas d on t.id_disciplina=d.id_disciplina
+			JOIN pre_requisitos pr on d.id_disciplina = pr.id_disciplina_requisito
+			AND m.id_aluno = p_ID_Aluno
+			AND UPPER(m.status) = 'APROVADO'
          WHERE pr.id_disciplina_principal = v_id_disciplina;
 
         IF v_qtd_requisitos_ok < v_qtd_requisitos_total THEN
@@ -103,6 +104,7 @@ BEGIN
         'Cursando',
         0.0
     );
+    
 /* esse ta duplicando as vagas pq na trigger tbm foi pedido que tivesse
 um incremento de vagas, optamos por deixar nas trigger para evitar a duplicação.
     UPDATE turmas
@@ -288,14 +290,15 @@ DELIMITER $$
 create procedure fn_ListarDisciplinasAprovadas( in p_ID_Aluno int)
 begin
     select distinct a.id_aluno, a.nome as "nome_aluno", ha.status,d.nomeDisciplina
-	from historicoaluno as ha
-	inner join disciplinas as d on ha.id_disciplina = d.id_disciplina
+	from matriculas as ha
+    inner join turmas as t on t.id_turma=ha.id_turma
+	inner join disciplinas d on t.id_disciplina = d.id_disciplina
 	inner join alunos as a on ha.id_aluno = a.id_aluno
 	where ha.status = "Aprovado"
     and a.id_aluno = p_ID_Aluno;
 end $$
 DELIMITER ;
-
+drop procedure fn_ListarDisciplinasAprovadas; 
 CALL fn_ListarDisciplinasAprovadas(4);
 
 
@@ -311,12 +314,13 @@ begin
     select
         sum(d.cargahoraria)
     into p_total_horas
-    from historicoaluno as h
-    inner join alunos as a on h.id_aluno = a.id_aluno
+    from matriculas as m
+    inner join alunos as a on m.id_aluno = a.id_aluno
+    inner join turmas t on m.id_turma=t.id_turma
     inner join disciplinas as d 
-            on d.id_disciplina = h.id_disciplina
-    where h.id_aluno = p_id_aluno
-      and h.status   = 'Aprovado';
+            on d.id_disciplina = t.id_disciplina
+    where m.id_aluno = p_id_aluno
+      and m.status   = 'Aprovado';
 end $$
 DELIMITER ;
 

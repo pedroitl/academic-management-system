@@ -257,7 +257,7 @@ INSERT INTO turmas (id_disciplina, id_professor, id_semestre, max_vagas, vagas_o
 (78, 9, 3, 45, 40),
 (79, 10, 3, 45, 38),
 (80, 11, 3, 40, 35),
-(6, 6, 4, 40, 37),
+(6, 6, 7, 40, 37),
 (7, 7, 4, 35, 31),
 (8, 8, 4, 35, 30),
 (9, 9, 4, 30, 26),

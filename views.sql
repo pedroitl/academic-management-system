@@ -35,9 +35,6 @@ inner join professores as p on t.id_professor = p.id_professor
 inner join matriculas as m on m.id_turma = t.id_turma
 group by t.id_turma,d.nomedisciplina,p.nome;
 
-drop view vw_DesempenhoTurma;
-
-
 /*vw_LogAuditoria
 Exibe as 20 operações mais recentes da tabela LogsSistema.*/
 
