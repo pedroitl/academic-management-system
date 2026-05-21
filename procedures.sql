@@ -298,7 +298,7 @@ begin
     and a.id_aluno = p_ID_Aluno;
 end $$
 DELIMITER ;
-drop procedure fn_ListarDisciplinasAprovadas; 
+
 CALL fn_ListarDisciplinasAprovadas(4);
 
 
