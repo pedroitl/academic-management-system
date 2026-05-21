@@ -27,14 +27,15 @@ Mostra o nome da disciplina, professor, média das notas, número de aprovados e
 reprovados por turma.*/
 
 create view vw_DesempenhoTurma as
-select d.nomedisciplina,p.nome as "professor_disciplina",t.id_turma,avg(h.notaFinal) as "medias_notas",
-SUM(CASE WHEN h.status = 'Aprovado' THEN 1 ELSE 0 END) AS aprovados,
-SUM(CASE WHEN h.status = 'Reprovado' THEN 1 ELSE 0 END) AS reprovados
+select d.nomedisciplina,p.nome as "professor_disciplina",t.id_turma,avg(m.nota_final) as "medias_notas",
+SUM(CASE WHEN m.status = 'Aprovado' THEN 1 ELSE 0 END) AS aprovados,
+SUM(CASE WHEN m.status = 'Reprovado' THEN 1 ELSE 0 END) AS reprovados
 from turmas as t inner join disciplinas as d on t.id_disciplina = d.id_disciplina
 inner join professores as p on t.id_professor = p.id_professor
 inner join matriculas as m on m.id_turma = t.id_turma
-inner join historicoaluno as h on h.id_aluno = m.id_aluno and h.id_disciplina = d.id_disciplina
 group by t.id_turma,d.nomedisciplina,p.nome;
+
+drop view vw_DesempenhoTurma;
 
 
 /*vw_LogAuditoria

@@ -184,18 +184,23 @@ DELIMITER ;
 /*sp_GerarHistoricoAluno
 >> o Parâmetro: p_ID_Aluno
 >> o Inserir no histórico todas as disciplinas aprovadas do aluno.*/
-
+select count(*)
+	from matriculas where id_aluno = 1;
 DELIMITER $$
 create procedure sp_GerarHistoricoAluno(in p_ID_Aluno int)
 begin
     DECLARE v_quantidade_alunos int;
+    DECLARE v_quantidade_alunos_matriculas int;
+    
+    select count(*) into v_quantidade_alunos_matriculas
+	from matriculas where id_aluno = p_ID_Aluno;
     
     select count(*) into v_quantidade_alunos
 	from historicoaluno where id_aluno = p_ID_Aluno;
     
-    if v_quantidade_alunos = 0 then
+    if v_quantidade_alunos < v_quantidade_alunos_matriculas then
 		insert into historicoaluno(id_aluno,id_disciplina,notaFinal,status)
-		select m.id_aluno,t.id_disciplina,m.notaFinal,m.status
+		select m.id_aluno,t.id_disciplina,m.nota_final,m.status
         from matriculas as m
         inner join turmas as t on m.id_turma = t.id_turma
         inner join disciplinas as d on t.id_disciplina = d.id_disciplina
