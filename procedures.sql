@@ -270,7 +270,7 @@ Retorna quantas disciplinas do currículo o aluno ainda não cursou.*/
 DELIMITER $$
 create procedure fn_ContarDisciplinasPendentes( in p_ID_Aluno int , in p_ID_Curso int, out p_qtd_pendentes int)
 begin
-	select count(*)
+	select count(distinct d.id_disciplina)
 		into p_qtd_pendentes
     from cursos               as c
     join curriculos           as cr on cr.id_curso      = c.id_curso
