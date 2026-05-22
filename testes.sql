@@ -72,6 +72,10 @@ disciplinas restantes.*/
 CALL fn_ContarDisciplinasPendentes(2,1,@disciplinas_pendentes);
 SELECT @disciplinas_pendentes;
 
+select m.*, t.id_disciplina from matriculas m join turmas t on t.id_turma=m.id_turma join vw_Disciplinas_Curso v 
+on t.id_disciplina=v.id_disciplina where id_aluno=2 and m.status='Aprovado' and v.id_curso=1;
+select count(*) as qtd_disciplinas from vw_Disciplinas_Curso where id_curso=1;
+
 /*o fn_ListarDisciplinasAprovadas → retornar disciplinas concluídas
 com sucesso.*/
 
@@ -102,10 +106,12 @@ bloquear a matrícula e registrar tentativa em LogsSistema.*/
 CALL sp_RegistrarMatricula(1, 111);
 CALL sp_RegistrarMatricula(1, 110);
 CALL sp_RegistrarMatricula(1, 92);
+CALL sp_RegistrarMatricula(1, 93);
+
 
 select count(*) as esta_cursando_em from matriculas where id_aluno=1 and upper(status)="CURSANDO";
 
-CALL sp_RegistrarMatricula(1, 93);
+CALL sp_RegistrarMatricula(1, 94);
 
 /*10. Reabrir período de matrícula
 o Executar sp_ReabrirPeriodoMatricula e verificar se
@@ -142,7 +148,6 @@ delete from disciplinas where id_disciplina=91;
 o Forçar uma falha dentro de sp_RegistrarMatricula (ex.: turma
 inexistente) e confirmar que nenhuma alteração parcial ficou gravada.*/
 
-select * from turmas where id_turma=35;
-select * from matriculas where id_aluno=1 and id_turma=35;
-select * from semestres where id_semestre=4;
-CALL sp_RegistrarMatricula(1, 35);
+select t.*, s.aberto_matricula from turmas t join semestres s on s.id_semestre=t.id_semestre where id_turma=35;
+select * from matriculas where id_aluno=1 and id_turma=2350;
+CALL sp_RegistrarMatricula(1, 2350);
