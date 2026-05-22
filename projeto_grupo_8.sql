@@ -1,3 +1,5 @@
+/*Arquivo em ordem de execução, mas é recomendado execução por lotes para sql não quebrar*/
+
 drop database if exists academico;
 
 create database academico;
