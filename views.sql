@@ -43,3 +43,6 @@ select *
 from logsSistema
 order by dataHora desc
 limit 20;
+
+create view vw_Disciplinas_Curso as select  distinct dc.id_disciplina, c.id_curso from disciplinas_curriculo dc 
+join curriculos c on dc.id_curriculo=c.id_curriculo;
