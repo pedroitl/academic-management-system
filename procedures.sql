@@ -270,16 +270,13 @@ Retorna quantas disciplinas do currículo o aluno ainda não cursou.*/
 DELIMITER $$
 create procedure fn_ContarDisciplinasPendentes( in p_ID_Aluno int , in p_ID_Curso int, out p_qtd_pendentes int)
 begin
-	select count(distinct d.id_disciplina)
-		into p_qtd_pendentes
-    from cursos               as c
-    join curriculos           as cr on cr.id_curso      = c.id_curso
-    join disciplinas_curriculo as dc on dc.id_curriculo = cr.id_curriculo
-    join disciplinas          as d  on d.id_disciplina  = dc.id_disciplina
+declare total int;
+declare cursada int;
+	select  count(*) into total from vw_Disciplinas_Curso where id_curso=p_ID_Curso;
+	select count(*) into cursada from matriculas m join turmas t on t.id_turma=m.id_turma join vw_Disciplinas_Curso v 
+on t.id_disciplina=v.id_disciplina where id_aluno=p_ID_Aluno and m.status='Aprovado' and v.id_curso=p_ID_Curso;
+	set p_qtd_pendentes = total-cursada;
 	
-    left join vw_BoletimAluno as v  on v.id_disciplina = d.id_disciplina and v.id_aluno = p_ID_Aluno
-    where c.id_curso = p_ID_Curso
-      and v.id_aluno is null;
 end $$
 DELIMITER ;
 

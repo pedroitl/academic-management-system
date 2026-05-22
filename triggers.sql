@@ -215,7 +215,7 @@ registrar o evento em LogsSistema.
 
 DELIMITER $
 CREATE TRIGGER trg_AtualizarStatusAutomaticamente
-AFTER UPDATE ON matriculas
+before insert ON matriculas
 FOR EACH ROW
 BEGIN
 	DECLARE total_disciplinas INT;
@@ -226,7 +226,7 @@ BEGIN
     
     SELECT nome into aluno from alunos where id_aluno= NEW.id_aluno;
     
-	IF total_disciplinas > 6 THEN
+	IF total_disciplinas >= 6 THEN
 		INSERT INTO LogsSistema (usuario,acao, tabelaAfetada, dataHora, descricao)
 	VALUES (aluno,'ERROR','matriculas',NOW(),'Erro: Houve uma tentativa de cadastro de aluno em uma turma, porém o aluno referente já possui 6 disciplinas com status "cursando", o que não é aceito.');
         SIGNAL SQLSTATE '45000' 
